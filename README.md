@@ -68,7 +68,7 @@ $ docker compose up --build
 ```
 <b>
 Inspect docker-compose.yaml for overridding the environment variables and docker-compose-dev.yaml for overridding local environment variables.
-The default port is 3000 and swagger documentation is avaialble at http://host-ip:3000/swagger
+The default port is 3000 and swagger documentation is available at http://host-ip:3000/swagger
 <b>
 
 ## Support
