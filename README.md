@@ -57,6 +57,18 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+## Ardhangini-app
+
+```bash
+# run for local development
+$ docker compose -f docker-compose-dev.yaml watch
+
+# run for prod
+$ docker compose up --build
+```
+<b>
+The default port id 3000 and swagger documentation is avaialble at http://<host-ip>:3000/swagger
+<b>
 
 ## Support
 
