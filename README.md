@@ -67,7 +67,7 @@ $ docker compose -f docker-compose-dev.yaml watch
 $ docker compose up --build
 ```
 <b>
-The default port id 3000 and swagger documentation is avaialble at http://<host-ip>:3000/swagger
+The default port is 3000 and swagger documentation is avaialble at http://host-ip:3000/swagger
 <b>
 
 ## Support
