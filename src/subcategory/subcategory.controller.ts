@@ -39,6 +39,14 @@ export class SubcategoryController {
     return this.subcategoryService.findAll();
   }
 
+  @Get('/category/:categoryId')
+  @ApiOperation({
+    description: 'Fetch All SubCategories by category',
+  })
+  findAllByCategory(@Param('categoryId') categoryId: string) {
+    return this.subcategoryService.findByCategory(categoryId);
+  }
+
   @ApiOperation({
     description: 'Fetch All SubCategories',
   })

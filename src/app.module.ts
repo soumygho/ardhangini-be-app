@@ -4,17 +4,15 @@ import { AppService } from './app.service';
 import { CategoryModule } from './category/category.module';
 import { SubcategoryModule } from './subcategory/subcategory.module';
 import { ProductModule } from './product/product.module';
-import { ProductpriceModule } from './productprice/productprice.module';
-import { ProductofferModule } from './productoffer/productoffer.module';
 import { CartinformationModule } from './cartinformation/cartinformation.module';
 import { OrderModule } from './order/order.module';
 import { PaymentModule } from './payment/payment.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { entities } from './entities';
 import { UserModule } from './user/user.module';
-import { UserSocialLoginModule } from './user-social-login/user-social-login.module';
 import { SiteImageModule } from './site-image/site-image.module';
+import { ProductTypeModule } from './product-type/product-type.module';
+import { ManufacturerModule } from './manufacturer/manufacturer.module';
 
 @Module({
   imports: [
@@ -28,19 +26,19 @@ import { SiteImageModule } from './site-image/site-image.module';
       database: process.env.DB_DATABASE,
       synchronize: process.env.DB_SYNCHRONIZE as unknown as boolean,
       logging: true,
-      entities: [...entities],
+      autoLoadEntities: true,
+      //entities: [...entities],
     }),
     CategoryModule,
     SubcategoryModule,
     ProductModule,
-    ProductpriceModule,
-    ProductofferModule,
     CartinformationModule,
     OrderModule,
     PaymentModule,
     UserModule,
-    UserSocialLoginModule,
     SiteImageModule,
+    ProductTypeModule,
+    ManufacturerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

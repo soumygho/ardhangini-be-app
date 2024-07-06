@@ -1,16 +1,16 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Category } from '../../category/entities/category.entity';
+import { Base } from 'src/category/entities/base.entity';
 
-@Entity()
-export class Subcategory {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+@Entity('subcategory')
+export class Subcategory extends Base {
   @Column({ type: 'varchar' })
   name: string;
   @Column({ type: 'varchar' })
   description: string;
   @Column({ type: 'boolean' })
   isActive: boolean;
-  @ManyToOne(() => Category, (Category) => Category.subcategories)
+  @ManyToOne(() => Category)
+  @JoinColumn({ name: 'category_id' })
   category: Category;
 }
