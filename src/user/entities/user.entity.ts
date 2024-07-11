@@ -1,3 +1,3 @@
-import { Base } from 'src/category/entities/base.entity';
+import { Base } from '../../common';
 
 export class User extends Base {}
