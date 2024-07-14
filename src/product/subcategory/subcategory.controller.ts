@@ -10,15 +10,17 @@ import {
 import { SubcategoryService } from './subcategory.service';
 import { CreateSubcategoryDto } from './dto/create-subcategory.dto';
 import { UpdateSubcategoryDto } from './dto/update-subcategory.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SubCategoryDto } from './dto/subcategory.dto';
 import { Subcategory } from './entities/subcategory.entity';
+import { BaseController } from 'src/common';
 
-@ApiBearerAuth()
 @ApiTags('Subcategory')
 @Controller('subcategory')
-export class SubcategoryController {
-  constructor(private readonly subcategoryService: SubcategoryService) {}
+export class SubcategoryController extends BaseController {
+  constructor(private readonly subcategoryService: SubcategoryService) {
+    super();
+  }
 
   @Post()
   @ApiOperation({

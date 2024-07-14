@@ -1,7 +1,7 @@
 import { Base } from '../../../../common';
 import { Product } from './product.entity';
 import { Column, JoinColumn, ManyToOne } from 'typeorm';
-import { ImageType } from '../../enums/product.enum';
+import { ImageType } from '../../enum/product.enum';
 
 export class ProductImage extends Base {
   @ManyToOne(() => Product)

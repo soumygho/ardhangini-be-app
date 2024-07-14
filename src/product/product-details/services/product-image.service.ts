@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ProductImage } from '../entities/common/product-images.entity';
 import { Repository } from 'typeorm';
 import { FileUploadService } from '../../../common/services/file-upload.service';
-import { ImageType } from '../enums/product.enum';
+import { ImageType } from '../enum/product.enum';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { ManagedUpload } from 'aws-sdk/clients/s3';
 

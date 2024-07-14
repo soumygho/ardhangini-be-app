@@ -1,13 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
+import { ProductTypes } from '../../product-type/enum/product-type.enum';
 
 export class CreateProductTypeDto {
   @IsNotEmpty()
   @ApiProperty({
-    example: 'test-product-type',
+    enum: ProductTypes,
+    example: ProductTypes.SAREE,
     required: true,
   })
-  name: string;
+  name: ProductTypes;
   @IsNotEmpty()
   @ApiProperty({
     example: 'test-product-description',

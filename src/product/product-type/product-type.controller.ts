@@ -10,13 +10,14 @@ import {
 import { ProductTypeService } from './product-type.service';
 import { CreateProductTypeDto } from './dto/create-product-type.dto';
 import { UpdateProductTypeDto } from './dto/update-product-type.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-
-@ApiBearerAuth()
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { BaseController } from 'src/common';
 @ApiTags('product-type')
 @Controller('product-type')
-export class ProductTypeController {
-  constructor(private readonly productTypeService: ProductTypeService) {}
+export class ProductTypeController extends BaseController {
+  constructor(private readonly productTypeService: ProductTypeService) {
+    super();
+  }
 
   @Post()
   @ApiOperation({
