@@ -1,10 +1,10 @@
 import { Entity, JoinColumn, OneToOne } from 'typeorm';
-import { Product } from '../common/product.entity';
-import { SareeDetails } from './saree-details.entity';
+import { ProductEntity } from '../common/product.entity';
+import { SareeDetailsEntity } from './saree-details.entity';
 
 @Entity('saree')
-export class Saree extends Product {
-  @OneToOne(() => SareeDetails)
+export class SareeEntity extends ProductEntity {
+  @OneToOne(() => SareeDetailsEntity)
   @JoinColumn({ name: 'sareedetails_id' })
-  sareeDetails: SareeDetails;
+  sareeDetails: SareeDetailsEntity;
 }

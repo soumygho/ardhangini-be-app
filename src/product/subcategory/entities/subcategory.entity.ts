@@ -1,16 +1,16 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { Category } from '../../category/entities/category.entity';
-import { Base } from '../../../common';
+import { CategoryEntity } from '../../category/entities/category.entity';
+import { BaseEntity } from '../../../common';
 
 @Entity('subcategory')
-export class Subcategory extends Base {
+export class SubcategoryEntity extends BaseEntity {
   @Column({ type: 'varchar' })
   name: string;
   @Column({ type: 'varchar', nullable: true })
   description: string;
   @Column({ type: 'boolean', default: false })
   isActive: boolean;
-  @ManyToOne(() => Category)
+  @ManyToOne(() => CategoryEntity)
   @JoinColumn({ name: 'category_id' })
-  category: Category;
+  category: CategoryEntity;
 }

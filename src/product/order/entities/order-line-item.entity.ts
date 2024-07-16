@@ -1,16 +1,16 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { Base } from '../../../common';
-import { Order } from './order.entity';
-import { Product } from 'src/product/product-details/entities/common/product.entity';
+import { BaseEntity } from '../../../common';
+import { OrderDetailsEntity } from './order.entity';
+import { ProductEntity } from 'src/product/product-details/entities/common/product.entity';
 
-@Entity()
-export class OrderDetails extends Base {
-  @ManyToOne(() => Order)
+@Entity('order_line_items')
+export class OrderLineItemEntity extends BaseEntity {
+  @ManyToOne(() => OrderDetailsEntity)
   @JoinColumn({ name: 'order_id' })
-  order: Order;
-  @ManyToOne(() => Product)
+  orderDetails: OrderDetailsEntity;
+  @ManyToOne(() => ProductEntity)
   @JoinColumn({ name: 'product_id' })
-  product: Product;
+  product: ProductEntity;
   @Column({ type: 'int' })
   orderQty: number;
   @Column({ type: 'numeric' })

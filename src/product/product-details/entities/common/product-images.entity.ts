@@ -1,12 +1,12 @@
-import { Base } from '../../../../common';
-import { Product } from './product.entity';
+import { BaseEntity } from '../../../../common';
+import { ProductEntity } from './product.entity';
 import { Column, JoinColumn, ManyToOne } from 'typeorm';
 import { ImageType } from '../../enum/product.enum';
 
-export class ProductImage extends Base {
-  @ManyToOne(() => Product)
+export class ProductImage extends BaseEntity {
+  @ManyToOne(() => ProductEntity)
   @JoinColumn({ name: 'product_id' })
-  product: Product;
+  product: ProductEntity;
   description: string;
   source: string;
   tumbnailSource: string;

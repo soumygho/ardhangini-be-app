@@ -1,24 +1,24 @@
-import { Base } from '../../../../common';
-import { Manufacturer } from '../../../manufacturer/entities/manufacturer.entity';
-import { Category } from '../../../category/entities/category.entity';
-import { ProductType } from '../../../product-type/entities/product-type.entity';
-import { Subcategory } from '../../../subcategory/entities/subcategory.entity';
+import { BaseEntity } from '../../../../common';
+import { ManufacturerEntity } from '../../../manufacturer/entities/manufacturer.entity';
+import { CategoryEntity } from '../../../category/entities/category.entity';
+import { ProductTypeEntity } from '../../../product-type/entities/product-type.entity';
+import { SubcategoryEntity } from '../../../subcategory/entities/subcategory.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 @Entity()
-export abstract class Product extends Base {
-  @ManyToOne(() => Category)
+export abstract class ProductEntity extends BaseEntity {
+  @ManyToOne(() => CategoryEntity)
   @JoinColumn({ name: 'category_id' })
-  category: Category;
-  @ManyToOne(() => Subcategory)
+  category: CategoryEntity;
+  @ManyToOne(() => SubcategoryEntity)
   @JoinColumn({ name: 'subcategory_id' })
-  subCategory: Subcategory;
-  @ManyToOne(() => ProductType)
+  subCategory: SubcategoryEntity;
+  @ManyToOne(() => ProductTypeEntity)
   @JoinColumn({ name: 'producttype_id' })
-  productType: ProductType;
-  @ManyToOne(() => Manufacturer)
+  productType: ProductTypeEntity;
+  @ManyToOne(() => ManufacturerEntity)
   @JoinColumn({ name: 'manufacturer_id' })
-  manufacturer: Manufacturer;
+  manufacturer: ManufacturerEntity;
 
   @Column({ type: 'varchar' })
   skuid: string;

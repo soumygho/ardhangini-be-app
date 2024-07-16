@@ -2,19 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { RegisterEmailPasswordDto } from '../dto/register-email-password.dto';
 import { Repository } from 'typeorm';
-import { User } from '../entities/user.entity';
+import { UserEntity } from '../entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RegisterUserWithEmailPasswordTransaction } from '../transactions/register-user-with-email-password.transaction';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
     private readonly userTransaction: RegisterUserWithEmailPasswordTransaction,
   ) {}
   async registerByEmailAndPassword(
     registerDto: RegisterEmailPasswordDto,
-  ): Promise<User> {
+  ): Promise<UserEntity> {
     return await this.userTransaction.run(registerDto);
   }
 

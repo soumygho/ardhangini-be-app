@@ -2,18 +2,18 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateManufacturerDto } from './dto/create-manufacturer.dto';
 import { UpdateManufacturerDto } from './dto/update-manufacturer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Manufacturer } from './entities/manufacturer.entity';
+import { ManufacturerEntity } from './entities/manufacturer.entity';
 import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
 export class ManufacturerService {
   constructor(
-    @InjectRepository(Manufacturer)
-    private readonly manufacturerRepository: Repository<Manufacturer>,
+    @InjectRepository(ManufacturerEntity)
+    private readonly manufacturerRepository: Repository<ManufacturerEntity>,
     private readonly dataSource: DataSource,
   ) {}
   async create(createManufacturerDto: CreateManufacturerDto) {
-    let manufacturer: Manufacturer = new Manufacturer();
+    let manufacturer: ManufacturerEntity = new ManufacturerEntity();
     Object.assign(manufacturer, createManufacturerDto);
     manufacturer = await this.manufacturerRepository.create(manufacturer);
     return await this.manufacturerRepository.save(manufacturer);
@@ -29,14 +29,14 @@ export class ManufacturerService {
 
   async findByName(name: string) {
     return await this.dataSource
-      .getRepository(Manufacturer)
+      .getRepository(ManufacturerEntity)
       .createQueryBuilder('manufacturer')
       .where('manufacturer.name = :name', { name })
       .getOne();
   }
 
   async update(id: string, updateManufacturerDto: UpdateManufacturerDto) {
-    const existingManufacturer: Manufacturer = await this.findOne(id);
+    const existingManufacturer: ManufacturerEntity = await this.findOne(id);
     if (existingManufacturer === undefined) {
       throw new NotFoundException(`Manufacturer with id ${id} not found.`);
     }

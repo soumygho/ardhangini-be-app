@@ -1,25 +1,25 @@
-import { Base } from 'src/common';
-import { Order } from 'src/product/order/entities/order.entity';
-import { Product } from 'src/product/product-details';
+import { BaseEntity } from 'src/common';
+import { OrderDetailsEntity } from 'src/product/order/entities/order.entity';
+import { ProductEntity } from 'src/product/product-details';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { TransactionType } from '../enum/transaction-type.enum';
 
 @Entity()
-export class ProductInventoryEntity extends Base {
+export class ProductInventoryEntity extends BaseEntity {
   @Column({ type: 'varchar', nullable: true })
   invoiceref: string;
   @Column({ type: 'varchar' })
   description: string;
 
-  @ManyToOne(() => Product)
+  @ManyToOne(() => ProductEntity)
   @JoinColumn({ name: 'product_id' })
-  product: Product;
+  product: ProductEntity;
   @Column({ type: 'numeric' })
   quantity: number;
 
-  @ManyToOne(() => Product, { nullable: true })
+  @ManyToOne(() => OrderDetailsEntity, { nullable: true })
   @JoinColumn({ name: 'order_id' })
-  order: Order;
+  order: OrderDetailsEntity;
 
   @Column({
     type: 'enum',

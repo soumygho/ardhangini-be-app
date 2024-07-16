@@ -1,3 +1,3 @@
-import { Base } from '../../common';
+import { BaseEntity } from '../../common';
 
-export class SiteImage extends Base {}
+export class SiteImage extends BaseEntity {}

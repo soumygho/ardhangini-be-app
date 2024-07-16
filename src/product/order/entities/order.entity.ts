@@ -1,16 +1,39 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { Base } from '../../../common';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
+import { BaseEntity } from '../../../common';
 import { OrderStatus, OrderType } from '../enum/order.enum';
-import { User } from 'src/user/entities/user.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { PaymentEntity } from 'src/product/payment/entity/payment.entity';
+import { OrderCancellationReasonType } from '../enum/order-cancellation-type.enum';
+import { OrderLineItemEntity } from './order-line-item.entity';
 
-@Entity()
-export class Order extends Base {
-  @ManyToOne(() => User)
+@Entity('order_details')
+export class OrderDetailsEntity extends BaseEntity {
+  @ManyToOne(() => UserEntity)
   @JoinColumn({ name: 'user_id' })
-  user: User;
+  user: UserEntity;
 
-  @Column('payment_id')
-  paymentid: string;
+  @OneToOne(() => PaymentEntity)
+  @JoinColumn({ name: 'payment_id' })
+  paymentDetails: PaymentEntity;
+  @Column({
+    type: 'enum',
+    enum: OrderCancellationReasonType,
+    nullable: true,
+  })
+  @OneToMany(
+    () => OrderLineItemEntity,
+    (orderLineItemEntity) => orderLineItemEntity.orderDetails,
+  )
+  lineItems: OrderLineItemEntity[];
+
+  orderCancellationType: OrderCancellationReasonType;
   @Column({
     type: 'enum',
     enum: OrderType,

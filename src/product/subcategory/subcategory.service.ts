@@ -2,27 +2,27 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSubcategoryDto } from './dto/create-subcategory.dto';
 import { UpdateSubcategoryDto } from './dto/update-subcategory.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Subcategory } from './entities/subcategory.entity';
+import { SubcategoryEntity } from './entities/subcategory.entity';
 import { DataSource, Repository } from 'typeorm';
 import { CategoryService } from '../category/category.service';
-import { Category } from '../category/entities/category.entity';
+import { CategoryEntity } from '../category/entities/category.entity';
 
 @Injectable()
 export class SubcategoryService {
   constructor(
-    @InjectRepository(Subcategory)
-    private readonly subCategoryRepository: Repository<Subcategory>,
+    @InjectRepository(SubcategoryEntity)
+    private readonly subCategoryRepository: Repository<SubcategoryEntity>,
     private readonly categoryService: CategoryService,
     private readonly datasource: DataSource,
   ) {}
   async create(
     createSubcategoryDto: CreateSubcategoryDto,
-  ): Promise<Subcategory> {
-    const category: Category = await this.getCategory(
+  ): Promise<SubcategoryEntity> {
+    const category: CategoryEntity = await this.getCategory(
       createSubcategoryDto.categoryid,
     );
     if (category !== undefined) {
-      let subCategory: Subcategory = new Subcategory();
+      let subCategory: SubcategoryEntity = new SubcategoryEntity();
       Object.assign(subCategory, createSubcategoryDto);
       subCategory.isActive = false;
       subCategory.category = category;
@@ -43,7 +43,7 @@ export class SubcategoryService {
     });
   }
 
-  async findOne(id: string): Promise<Subcategory> {
+  async findOne(id: string): Promise<SubcategoryEntity> {
     return await this.subCategoryRepository.findOne({
       where: [{ id: id }],
       relations: {
@@ -52,11 +52,11 @@ export class SubcategoryService {
     });
   }
 
-  async findByCategory(categoryId: string): Promise<Subcategory[]> {
-    const category: Category = await this.getCategory(categoryId);
+  async findByCategory(categoryId: string): Promise<SubcategoryEntity[]> {
+    const category: CategoryEntity = await this.getCategory(categoryId);
     if (category !== undefined) {
       return await this.datasource
-        .getRepository(Subcategory)
+        .getRepository(SubcategoryEntity)
         .createQueryBuilder('subcategory')
         .where('subcategory.category_id = :categoryId', { categoryId })
         .getMany();
@@ -68,12 +68,12 @@ export class SubcategoryService {
   async update(
     id: string,
     updateSubcategoryDto: UpdateSubcategoryDto,
-  ): Promise<Subcategory> {
-    const existingSubcategory: Subcategory = await this.findOne(id);
+  ): Promise<SubcategoryEntity> {
+    const existingSubcategory: SubcategoryEntity = await this.findOne(id);
     if (existingSubcategory === undefined) {
       throw new NotFoundException(`SubCategory with id ${id} not found.`);
     }
-    const subCategory: Subcategory = new Subcategory();
+    const subCategory: SubcategoryEntity = new SubcategoryEntity();
     Object.assign(subCategory, updateSubcategoryDto);
     subCategory.id = id;
     subCategory.isActive = existingSubcategory.isActive;
@@ -84,7 +84,7 @@ export class SubcategoryService {
     return await this.subCategoryRepository.delete(id);
   }
 
-  private async getCategory(categoryId: string): Promise<Category> {
+  private async getCategory(categoryId: string): Promise<CategoryEntity> {
     return this.categoryService.findOne(categoryId);
   }
 }

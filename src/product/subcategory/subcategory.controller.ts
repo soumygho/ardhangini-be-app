@@ -12,7 +12,7 @@ import { CreateSubcategoryDto } from './dto/create-subcategory.dto';
 import { UpdateSubcategoryDto } from './dto/update-subcategory.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SubCategoryDto } from './dto/subcategory.dto';
-import { Subcategory } from './entities/subcategory.entity';
+import { SubcategoryEntity } from './entities/subcategory.entity';
 import { BaseController } from 'src/common';
 
 @ApiTags('Subcategory')
@@ -27,10 +27,7 @@ export class SubcategoryController extends BaseController {
     description: 'Create SubCategory',
   })
   async create(@Body() createSubcategoryDto: CreateSubcategoryDto) {
-    const subCategory: Subcategory =
-      await this.subcategoryService.create(createSubcategoryDto);
-    const subcategoryDto: SubCategoryDto = Object.assign(subCategory);
-    return subcategoryDto;
+    return await this.subcategoryService.create(createSubcategoryDto);
   }
 
   @Get()

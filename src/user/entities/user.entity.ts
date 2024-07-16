@@ -1,10 +1,10 @@
 import { Column, Entity } from 'typeorm';
-import { Base } from '../../common';
+import { BaseEntity } from '../../common';
 import { AccountStatus } from '../enum/user.enum';
 import { Gender } from '../enum/gender.enum';
 
 @Entity()
-export class User extends Base {
+export class UserEntity extends BaseEntity {
   @Column({ type: 'varchar' })
   name: string;
   @Column({ type: 'date' })

@@ -20,7 +20,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Pagination } from 'nestjs-typeorm-paginate';
-import { Category } from './entities/category.entity';
+import { CategoryEntity } from './entities/category.entity';
 
 @ApiBearerAuth()
 @ApiTags('category')
@@ -51,7 +51,7 @@ export class CategoryController {
   findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
-  ): Promise<Pagination<Category>> {
+  ): Promise<Pagination<CategoryEntity>> {
     return this.categoryService.findAll({
       page,
       limit,

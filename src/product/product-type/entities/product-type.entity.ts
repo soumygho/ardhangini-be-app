@@ -1,10 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { ProductTypes } from '../enum/product-type.enum';
+import { BaseEntity } from 'src/common';
 
 @Entity()
-export class ProductType {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+export class ProductTypeEntity extends BaseEntity {
   @Column({
     type: 'enum',
     enum: ProductTypes,

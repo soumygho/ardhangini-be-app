@@ -1,11 +1,11 @@
 import { Column, JoinColumn, OneToOne } from 'typeorm';
-import { Product } from './product.entity';
-import { Base } from '../../../../common';
+import { ProductEntity } from './product.entity';
+import { BaseEntity } from '../../../../common';
 
-export abstract class ProductDetails extends Base {
-  @OneToOne(() => Product)
+export abstract class ProductDetailsEntity extends BaseEntity {
+  @OneToOne(() => ProductEntity)
   @JoinColumn({ name: 'product_id' })
-  product: Product;
+  product: ProductEntity;
   @Column({ name: 'is_best_seller' })
   isBestSeller: boolean;
 }

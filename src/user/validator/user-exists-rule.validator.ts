@@ -5,7 +5,7 @@ import {
 } from 'class-validator';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../entities/user.entity';
+import { UserEntity } from '../entities/user.entity';
 import { Injectable } from '@nestjs/common';
 
 export enum UserExistRuleType {
@@ -18,7 +18,7 @@ export enum UserExistRuleType {
 @Injectable()
 export class UserExistsRule implements ValidatorConstraintInterface {
   constructor(
-    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
   ) {}
   validate(
     value: any,
@@ -61,7 +61,7 @@ export class UserExistsRule implements ValidatorConstraintInterface {
   }
 
   async userExistById(id: string, existCheck: boolean) {
-    const user: User = await this.userRepository.findOneBy({ id });
+    const user: UserEntity = await this.userRepository.findOneBy({ id });
     if (existCheck) {
       return user !== null;
     }
@@ -69,7 +69,7 @@ export class UserExistsRule implements ValidatorConstraintInterface {
   }
 
   async userExistByEmail(email: string, existCheck: boolean) {
-    const user: User = await this.userRepository.findOneBy({ email });
+    const user: UserEntity = await this.userRepository.findOneBy({ email });
     if (existCheck) {
       return user !== null;
     }
@@ -77,7 +77,7 @@ export class UserExistsRule implements ValidatorConstraintInterface {
   }
 
   async userExistByMobile(mobile: string, existCheck: boolean) {
-    const user: User = await this.userRepository.findOneBy({ mobile });
+    const user: UserEntity = await this.userRepository.findOneBy({ mobile });
     if (existCheck) {
       return user !== null;
     }

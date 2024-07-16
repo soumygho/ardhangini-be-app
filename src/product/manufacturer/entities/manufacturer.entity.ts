@@ -1,8 +1,8 @@
-import { Base } from '../../../common';
+import { BaseEntity } from '../../../common';
 import { Column, Entity } from 'typeorm';
 
 @Entity()
-export class Manufacturer extends Base {
+export class ManufacturerEntity extends BaseEntity {
   @Column({ type: 'varchar' })
   origin: string;
   @Column({ type: 'varchar' })

@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Category } from './entities/category.entity';
+import { CategoryEntity } from './entities/category.entity';
 import { Repository } from 'typeorm';
 import {
   IPaginationOptions,
@@ -13,35 +13,35 @@ import {
 @Injectable()
 export class CategoryService {
   constructor(
-    @InjectRepository(Category)
-    private readonly categoryRepository: Repository<Category>,
+    @InjectRepository(CategoryEntity)
+    private readonly categoryRepository: Repository<CategoryEntity>,
   ) {}
 
-  create(createCategoryDto: CreateCategoryDto): Promise<Category> {
-    const category: Category = new Category();
+  create(createCategoryDto: CreateCategoryDto): Promise<CategoryEntity> {
+    const category: CategoryEntity = new CategoryEntity();
     category.description = createCategoryDto.description;
     category.name = createCategoryDto.name;
     category.isActive = false;
     return this.categoryRepository.save(category);
   }
 
-  findAll(options: IPaginationOptions): Promise<Pagination<Category>> {
-    return paginate<Category>(this.categoryRepository, options);
+  findAll(options: IPaginationOptions): Promise<Pagination<CategoryEntity>> {
+    return paginate<CategoryEntity>(this.categoryRepository, options);
   }
 
-  findOne(id: string): Promise<Category> {
+  findOne(id: string): Promise<CategoryEntity> {
     return this.categoryRepository.findOneBy({ id });
   }
 
   async update(
     id: string,
     updateCategoryDto: UpdateCategoryDto,
-  ): Promise<Category> {
-    const existingCategory: Category = await this.findOne(id);
+  ): Promise<CategoryEntity> {
+    const existingCategory: CategoryEntity = await this.findOne(id);
     if (existingCategory === undefined) {
       throw new NotFoundException(`Category with id ${id} not found.`);
     }
-    const category: Category = new Category();
+    const category: CategoryEntity = new CategoryEntity();
     category.description = updateCategoryDto.description;
     category.name = updateCategoryDto.name;
     category.isActive = existingCategory.isActive;
