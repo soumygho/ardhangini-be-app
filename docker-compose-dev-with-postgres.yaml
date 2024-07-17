@@ -1,0 +1,36 @@
+version: '3.5'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ardhangini-be-app-back
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=root
+      - DB_DATABASE=ardhangini_db
+      - DB_TYPE=postgres
+    ports:
+      - '3000:3000'
+
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:13
+    container_name: ardhangini-postgres
+    environment:
+      POSTGRES_DB: ardhangini_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - '9090:5432' # Correcting to default port
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      
+volumes:
+  postgres_data:
+    driver: local
