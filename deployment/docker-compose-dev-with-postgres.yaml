@@ -16,17 +16,6 @@ services:
     ports:
       - '3000:3000'
 
-    develop:
-      watch:
-        - action: sync
-          path: ./src
-          target: /usr/app/src
-          ignore:
-            - node_modules/
-        - action: rebuild
-          path: package.json
-
-
     depends_on:
       - postgres
 
