@@ -1,26 +1,82 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from '../dto/create-product.dto';
-import { UpdateProductDto } from '../dto/update-product.dto';
+import { DataSource } from 'typeorm';
+import { RegisterOrUpdateProductTransaction } from '../transactions/register-product.transaction';
+import { ProductTypeEntity } from 'src/product/product-type/entities/product-type.entity';
+import { ProductTypes } from 'src/product/product-type/enum/product-type.enum';
+import { SareeEntity } from '../entities';
+import { SareeDetailsMapper } from '../mapper/saree-details.mapper';
 
 @Injectable()
 export class ProductService {
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+  constructor(
+    private readonly datasource: DataSource,
+    private readonly productTransaction: RegisterOrUpdateProductTransaction,
+    private readonly sareeDetailsMapper: SareeDetailsMapper,
+  ) {}
+  async createOrUpdate(createProductDto: CreateProductDto) {
+    return await this.productTransaction.run(createProductDto);
   }
 
-  findAll() {
-    return `This action returns all product`;
+  async findAll(productTypeId: string) {
+    if (
+      !(await this.datasource
+        .getRepository(ProductTypeEntity)
+        .existsBy({ id: productTypeId }))
+    ) {
+      throw new NotFoundException('Product Type not Found');
+    }
+    const productType: ProductTypeEntity = await this.datasource
+      .getRepository(ProductTypeEntity)
+      .findOneBy({ id: productTypeId });
+    if (productType.name.toLowerCase() === ProductTypes.SAREE) {
+      return (await this.datasource.getRepository(SareeEntity).find()).map(
+        (sareeEntity) => this.sareeDetailsMapper.mapFrom(sareeEntity),
+      );
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(productTypeId: string, id: string) {
+    if (
+      !(await this.datasource
+        .getRepository(ProductTypeEntity)
+        .existsBy({ id: productTypeId }))
+    ) {
+      throw new NotFoundException('Product Type not Found');
+    }
+    const productType: ProductTypeEntity = await this.datasource
+      .getRepository(ProductTypeEntity)
+      .findOneBy({ id: productTypeId });
+    if (productType.name.toLowerCase() === ProductTypes.SAREE) {
+      if (
+        !(await this.datasource.getRepository(SareeEntity).existsBy({ id }))
+      ) {
+        throw new NotFoundException('Product Type not Found');
+      }
+      return this.sareeDetailsMapper.mapFrom(
+        await this.datasource.getRepository(SareeEntity).findOneBy({ id }),
+      );
+    }
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(productTypeId: string, id: string) {
+    if (
+      !(await this.datasource
+        .getRepository(ProductTypeEntity)
+        .existsBy({ id: productTypeId }))
+    ) {
+      throw new NotFoundException('Product Type not Found');
+    }
+    const productType: ProductTypeEntity = await this.datasource
+      .getRepository(ProductTypeEntity)
+      .findOneBy({ id: productTypeId });
+    if (productType.name.toLowerCase() === ProductTypes.SAREE) {
+      if (
+        !(await this.datasource.getRepository(SareeEntity).existsBy({ id }))
+      ) {
+        throw new NotFoundException('Product Type not Found');
+      }
+      return await this.datasource.getRepository(SareeEntity).delete({ id });
+    }
   }
 }

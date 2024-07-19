@@ -13,20 +13,16 @@ import {
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiQuery,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { CategoryEntity } from './entities/category.entity';
-
-@ApiBearerAuth()
+import { BaseController } from 'src/common';
 @ApiTags('category')
 @Controller('category')
-export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
+export class CategoryController extends BaseController {
+  constructor(private readonly categoryService: CategoryService) {
+    super();
+  }
 
   @Post()
   @ApiOperation({

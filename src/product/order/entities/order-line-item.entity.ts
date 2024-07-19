@@ -1,16 +1,19 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from '../../../common';
 import { OrderDetailsEntity } from './order.entity';
-import { ProductEntity } from 'src/product/product-details/entities/common/product.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('order_line_items')
 export class OrderLineItemEntity extends BaseEntity {
   @ManyToOne(() => OrderDetailsEntity)
   @JoinColumn({ name: 'order_id' })
   orderDetails: OrderDetailsEntity;
-  @ManyToOne(() => ProductEntity)
-  @JoinColumn({ name: 'product_id' })
-  product: ProductEntity;
+
+  @Exclude({ toPlainOnly: true })
+  productTypeId: string;
+  @Exclude({ toPlainOnly: true })
+  productId: string;
+
   @Column({ type: 'int' })
   orderQty: number;
   @Column({ type: 'numeric' })

@@ -1,5 +1,11 @@
 import { Module } from '@nestjs/common';
-import { ProductService } from './product-details';
+import {
+  FabricDetailsEntity,
+  ProductImageUploadService,
+  ProductService,
+  SareeDetailsEntity,
+  SareeEntity,
+} from './product-details';
 import { ProductController } from './product-details';
 import { CommonModule } from 'src/common/common.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -19,14 +25,26 @@ import { ProductTypeController } from './product-type/product-type.controller';
 import { ProductTypeService } from './product-type/product-type.service';
 import { PaymentService } from './payment/services/payment.service';
 import { OrderService } from './order/services/order.service';
+import { ProductImageController } from './product-details/controller/product-image.controller';
+import { MulterModule } from '@nestjs/platform-express';
+import { RegisterOrUpdateProductTransaction } from './product-details/transactions/register-product.transaction';
+import { FabricService } from './fabric/service/fabric.service';
+import { FabricController } from './fabric/controller/fabric.controller';
+import { SareeDetailsMapper } from './product-details/mapper/saree-details.mapper';
+import { SareeImageEntity } from './product-details/entities/saree/saree-images.entity';
 
 @Module({
   imports: [
+    MulterModule.register(),
     TypeOrmModule.forFeature([
       CategoryEntity,
       SubcategoryEntity,
       ManufacturerEntity,
       ProductTypeEntity,
+      FabricDetailsEntity,
+      SareeDetailsEntity,
+      SareeEntity,
+      SareeImageEntity,
     ]),
     CommonModule,
   ],
@@ -38,6 +56,8 @@ import { OrderService } from './order/services/order.service';
     ProductController,
     OrderController,
     PaymentController,
+    ProductImageController,
+    FabricController,
   ],
   providers: [
     CategoryService,
@@ -47,6 +67,10 @@ import { OrderService } from './order/services/order.service';
     ProductService,
     OrderService,
     PaymentService,
+    FabricService,
+    ProductImageUploadService,
+    RegisterOrUpdateProductTransaction,
+    SareeDetailsMapper,
   ],
   exports: [],
 })

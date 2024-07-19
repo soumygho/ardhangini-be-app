@@ -1,11 +1,9 @@
-import { Column, JoinColumn, OneToOne } from 'typeorm';
-import { ProductEntity } from './product.entity';
+import { Column } from 'typeorm';
 import { BaseEntity } from '../../../../common';
+import { ApiProperty } from '@nestjs/swagger';
 
 export abstract class ProductDetailsEntity extends BaseEntity {
-  @OneToOne(() => ProductEntity)
-  @JoinColumn({ name: 'product_id' })
-  product: ProductEntity;
-  @Column({ name: 'is_best_seller' })
+  @ApiProperty()
+  @Column({ name: 'is_best_seller', nullable: true, default: false })
   isBestSeller: boolean;
 }

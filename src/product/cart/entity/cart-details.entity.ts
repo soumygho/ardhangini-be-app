@@ -10,6 +10,7 @@ export class CartDetailsEntity extends BaseEntity {
   @OneToMany(
     () => CartLineItemEntity,
     (cartLineItemEntity) => cartLineItemEntity.cartDetails,
+    { eager: true },
   )
   lineItems: CartLineItemEntity[];
 }

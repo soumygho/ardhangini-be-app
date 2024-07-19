@@ -15,13 +15,14 @@ import { OrderLineItemEntity } from './order-line-item.entity';
 
 @Entity('order_details')
 export class OrderDetailsEntity extends BaseEntity {
-  @ManyToOne(() => UserEntity)
+  @ManyToOne(() => UserEntity, { eager: true })
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
 
-  @OneToOne(() => PaymentEntity)
+  @OneToOne(() => PaymentEntity, { nullable: true, eager: true })
   @JoinColumn({ name: 'payment_id' })
   paymentDetails: PaymentEntity;
+
   @Column({
     type: 'enum',
     enum: OrderCancellationReasonType,
@@ -30,9 +31,15 @@ export class OrderDetailsEntity extends BaseEntity {
   @OneToMany(
     () => OrderLineItemEntity,
     (orderLineItemEntity) => orderLineItemEntity.orderDetails,
+    { eager: true },
   )
   lineItems: OrderLineItemEntity[];
 
+  @Column({
+    type: 'enum',
+    enum: OrderType,
+    nullable: true,
+  })
   orderCancellationType: OrderCancellationReasonType;
   @Column({
     type: 'enum',

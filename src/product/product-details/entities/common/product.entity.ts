@@ -3,20 +3,19 @@ import { ManufacturerEntity } from '../../../manufacturer/entities/manufacturer.
 import { CategoryEntity } from '../../../category/entities/category.entity';
 import { ProductTypeEntity } from '../../../product-type/entities/product-type.entity';
 import { SubcategoryEntity } from '../../../subcategory/entities/subcategory.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, JoinColumn, ManyToOne } from 'typeorm';
 
-@Entity()
 export abstract class ProductEntity extends BaseEntity {
-  @ManyToOne(() => CategoryEntity)
+  @ManyToOne(() => CategoryEntity, { eager: true })
   @JoinColumn({ name: 'category_id' })
   category: CategoryEntity;
-  @ManyToOne(() => SubcategoryEntity)
+  @ManyToOne(() => SubcategoryEntity, { eager: true })
   @JoinColumn({ name: 'subcategory_id' })
   subCategory: SubcategoryEntity;
-  @ManyToOne(() => ProductTypeEntity)
+  @ManyToOne(() => ProductTypeEntity, { eager: true })
   @JoinColumn({ name: 'producttype_id' })
   productType: ProductTypeEntity;
-  @ManyToOne(() => ManufacturerEntity)
+  @ManyToOne(() => ManufacturerEntity, { eager: true })
   @JoinColumn({ name: 'manufacturer_id' })
   manufacturer: ManufacturerEntity;
 
@@ -34,10 +33,14 @@ export abstract class ProductEntity extends BaseEntity {
   offerprice: number;
   @Column({ type: 'numeric' })
   actualprice: number;
-  @Column({ type: 'numeric' })
-  discountPercentage: number;
   @Column({ type: 'int' })
   available_qty: number;
   @Column({ type: 'boolean' })
   isActive: boolean;
+  @Column({ name: 'return_exchange_policy', type: 'varchar' })
+  returnExchangePolicy: string;
+  @Column({ type: 'numeric' })
+  cgst: number;
+  @Column({ type: 'numeric' })
+  sgst: number;
 }

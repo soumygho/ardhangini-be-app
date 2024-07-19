@@ -17,11 +17,11 @@ export class S3FileUploadService {
       Bucket: bucket,
       Key: String(name),
       Body: file,
-      ACL: 'public-read',
+      //ACL: 'public-read',
       ContentType: mimetype,
       ContentDisposition: 'inline',
       CreateBucketConfiguration: {
-        LocationConstraint: 'ap-south-1',
+        LocationConstraint: process.env.AWS_S3_REGION,
       },
     };
 

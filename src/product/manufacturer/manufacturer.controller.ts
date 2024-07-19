@@ -10,10 +10,15 @@ import {
 import { ManufacturerService } from './manufacturer.service';
 import { CreateManufacturerDto } from './dto/create-manufacturer.dto';
 import { UpdateManufacturerDto } from './dto/update-manufacturer.dto';
+import { BaseController } from 'src/common';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('manufacturer')
-export class ManufacturerController {
-  constructor(private readonly manufacturerService: ManufacturerService) {}
+@ApiTags('Manufacturer Api')
+export class ManufacturerController extends BaseController {
+  constructor(private readonly manufacturerService: ManufacturerService) {
+    super();
+  }
 
   @Post()
   create(@Body() createManufacturerDto: CreateManufacturerDto) {

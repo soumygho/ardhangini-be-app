@@ -1,1 +1,1 @@
-export * from './product.enum';
+export * from '../../../common/enum/image-type.enum';

@@ -10,10 +10,15 @@ import {
 import { OrderService } from '../services/order.service';
 import { CreateOrderDto } from '../dto/create-order.dto';
 import { UpdateOrderDto } from '../dto/update-order.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { BaseController } from 'src/common';
 
 @Controller('order')
-export class OrderController {
-  constructor(private readonly orderService: OrderService) {}
+@ApiTags('Order Api')
+export class OrderController extends BaseController {
+  constructor(private readonly orderService: OrderService) {
+    super();
+  }
 
   @Post()
   create(@Body() createOrderDto: CreateOrderDto) {

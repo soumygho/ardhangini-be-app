@@ -1,20 +1,28 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { FabricDetailsEntity } from '../common/fabric-details.entity';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
+import { FabricDetailsEntity } from '../../../fabric/entity/fabric-details.entity';
 import { ProductDetailsEntity } from '../common/product-details.entity';
+import { SareeEntity } from './saree.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('saree_details')
 export class SareeDetailsEntity extends ProductDetailsEntity {
-  @ManyToOne(() => FabricDetailsEntity)
+  @OneToOne(() => SareeEntity, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'saree_id' })
+  product: SareeEntity;
+  @ManyToOne(() => FabricDetailsEntity, { eager: true })
   @JoinColumn({ name: 'fabricdetails_id' })
+  @ApiProperty()
   fabricDetails: FabricDetailsEntity;
-  @Column({ type: 'numeric' })
+  @Column({ name: 'length', type: 'numeric' })
+  @ApiProperty()
   length: number;
-  @Column({ type: 'numeric' })
+  @Column({ name: 'width', type: 'numeric' })
+  @ApiProperty()
   width: number;
-  @Column({ type: 'boolean' })
-  blouse_piece: boolean;
-  @Column({ type: 'varchar' })
+  @Column({ name: 'blouse_included', type: 'boolean', default: false })
+  @ApiProperty()
+  blousePieceIncluded: boolean;
+  @Column({ type: 'varchar', nullable: true })
+  @ApiProperty()
   blouse_desc: string;
-  @Column({ type: 'varchar' })
-  return_exchange_policy: string;
 }
