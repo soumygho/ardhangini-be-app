@@ -17,7 +17,7 @@ export class SareeDetailsMapper extends BaseMapper<
     productSnapshot.availableQuantity = source.available_qty;
     productSnapshot.averageReview = source.averageReview;
     productSnapshot.category = source.category.name;
-    productSnapshot.isBestSeller = source.sareeDetails.isBestSeller;
+    productSnapshot.isBestSeller = source.isBestSeller;
     productSnapshot.isNew = true;
     productSnapshot.isTrending = true;
     productSnapshot.offerprice = source.offerprice;

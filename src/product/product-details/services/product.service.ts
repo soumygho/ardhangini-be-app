@@ -6,6 +6,8 @@ import { ProductTypeEntity } from 'src/product/product-type/entities/product-typ
 import { ProductTypes } from 'src/product/product-type/enum/product-type.enum';
 import { SareeEntity } from '../entities';
 import { SareeDetailsMapper } from '../mapper/saree-details.mapper';
+import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
+import { ProductSnapshotDto } from '../dto/product-snapshot.dto';
 
 @Injectable()
 export class ProductService {
@@ -18,7 +20,7 @@ export class ProductService {
     return await this.productTransaction.run(createProductDto);
   }
 
-  async findAll(productTypeId: string) {
+  async findAll(productTypeId: string, options: IPaginationOptions) {
     if (
       !(await this.datasource
         .getRepository(ProductTypeEntity)
@@ -30,8 +32,12 @@ export class ProductService {
       .getRepository(ProductTypeEntity)
       .findOneBy({ id: productTypeId });
     if (productType.name.toLowerCase() === ProductTypes.SAREE) {
-      return (await this.datasource.getRepository(SareeEntity).find()).map(
+      /*return (await this.datasource.getRepository(SareeEntity).find()).map(
         (sareeEntity) => this.sareeDetailsMapper.mapFrom(sareeEntity),
+      );*/
+      return paginate<SareeEntity>(
+        this.datasource.getRepository(SareeEntity),
+        options,
       );
     }
   }

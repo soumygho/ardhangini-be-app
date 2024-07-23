@@ -3,12 +3,17 @@ import { FabricDetailsEntity } from '../../../fabric/entity/fabric-details.entit
 import { ProductDetailsEntity } from '../common/product-details.entity';
 import { SareeEntity } from './saree.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 
 @Entity('saree_details')
 export class SareeDetailsEntity extends ProductDetailsEntity {
+  @Exclude({ toPlainOnly: true })
   @OneToOne(() => SareeEntity, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'saree_id' })
   product: SareeEntity;
+  /*@Column({ name: 'saree_id', nullable: true })
+  sareeId: string;*/
+
+  @ApiProperty()
   @ManyToOne(() => FabricDetailsEntity, { eager: true })
   @JoinColumn({ name: 'fabricdetails_id' })
   @ApiProperty()

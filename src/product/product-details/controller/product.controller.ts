@@ -1,10 +1,22 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Query,
+  DefaultValuePipe,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { ProductService } from '../services/product.service';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { BaseController } from 'src/common';
 import { CreateProductResponseDto } from '../dto/create-product-response.dto';
 import { ProductSnapshotDto } from '../dto/product-snapshot.dto';
+import { Pagination } from 'nestjs-typeorm-paginate';
+import { SareeEntity } from '../entities';
 
 @Controller('product')
 @ApiTags('Product')
@@ -28,11 +40,19 @@ export class ProductController extends BaseController {
   @Get(':productTypeId')
   @ApiOkResponse({
     description: 'All Product Response',
-    type: ProductSnapshotDto,
+    type: SareeEntity,
     isArray: true,
   })
-  async findAll(@Param('productTypeId') productTypeId: string) {
-    return await this.productService.findAll(productTypeId);
+  async findAll(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
+    @Param('productTypeId') productTypeId: string,
+  ): Promise<Pagination<SareeEntity>> {
+    return await this.productService.findAll(productTypeId, {
+      page,
+      limit,
+      route: `/product/${productTypeId}`,
+    });
   }
 
   @ApiOkResponse({

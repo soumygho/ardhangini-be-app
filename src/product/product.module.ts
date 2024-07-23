@@ -32,6 +32,8 @@ import { FabricService } from './fabric/service/fabric.service';
 import { FabricController } from './fabric/controller/fabric.controller';
 import { SareeDetailsMapper } from './product-details/mapper/saree-details.mapper';
 import { SareeImageEntity } from './product-details/entities/saree/saree-images.entity';
+import { CartResponseMapper } from './cart/util/cart-response.mapper';
+import { AddOrUpdateCartTransaction } from './cart/transaction/add-update-cart.transaction';
 
 @Module({
   imports: [
@@ -71,6 +73,8 @@ import { SareeImageEntity } from './product-details/entities/saree/saree-images.
     ProductImageUploadService,
     RegisterOrUpdateProductTransaction,
     SareeDetailsMapper,
+    CartResponseMapper,
+    AddOrUpdateCartTransaction,
   ],
   exports: [],
 })

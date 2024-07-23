@@ -100,8 +100,9 @@ export class RegisterOrUpdateProductTransaction extends BaseTransaction<
               id: currentSareeEntity.sareeDetails.id,
             });
           sareeDetailsEntity.id = currentSareeDetailsEntity.id;
-          sareeDetailsEntity.isBestSeller =
-            currentSareeDetailsEntity.isBestSeller;
+          sareeEntity.isBestSeller = currentSareeEntity.isBestSeller;
+          sareeEntity.isNew = currentSareeEntity.isNew;
+          sareeEntity.isTrending = currentSareeEntity.isTrending;
           sareeEntity.sareeDetails = currentSareeDetailsEntity;
           console.trace(JSON.stringify(sareeEntity));
           console.trace(JSON.stringify(sareeDetailsEntity));
@@ -119,8 +120,8 @@ export class RegisterOrUpdateProductTransaction extends BaseTransaction<
         sareeEntity.subCategory = subCategory;
         sareeEntity.skuid = data.skuid;
         sareeDetailsEntity.fabricDetails = fabricDetails;
-        sareeDetailsEntity.isBestSeller = false;
         sareeEntity = await sareeRepository.save(sareeEntity);
+        //sareeDetailsEntity.sareeId = sareeEntity.id;
         sareeDetailsEntity.product = sareeEntity;
         sareeDetailsEntity =
           await sareeDetailsRepository.save(sareeDetailsEntity);
@@ -139,7 +140,7 @@ export class RegisterOrUpdateProductTransaction extends BaseTransaction<
         ((sareeEntity.actualprice - sareeEntity.offerprice) /
           sareeEntity.actualprice) *
         100;
-      response.isBestSeller = sareeDetailsEntity.isBestSeller;
+      response.isBestSeller = sareeEntity.isBestSeller;
       console.log(JSON.stringify(response));
       return response;
     }
