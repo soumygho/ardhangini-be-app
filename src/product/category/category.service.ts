@@ -25,8 +25,9 @@ export class CategoryService {
     return this.categoryRepository.save(category);
   }
 
-  findAll(options: IPaginationOptions): Promise<Pagination<CategoryEntity>> {
-    return paginate<CategoryEntity>(this.categoryRepository, options);
+  async findAll(options: IPaginationOptions): Promise<CategoryEntity[]> {
+    //return paginate<CategoryEntity>(this.categoryRepository, options);
+    return await this.categoryRepository.find();
   }
 
   findOne(id: string): Promise<CategoryEntity> {

@@ -1,3 +1,4 @@
+import { CreateOrderDto } from './../dto/create-order.dto';
 import {
   Controller,
   Get,
@@ -8,8 +9,6 @@ import {
   Delete,
 } from '@nestjs/common';
 import { OrderService } from '../services/order.service';
-import { CreateOrderDto } from '../dto/create-order.dto';
-import { UpdateOrderDto } from '../dto/update-order.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { BaseController } from 'src/common';
 
@@ -36,7 +35,7 @@ export class OrderController extends BaseController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
+  update(@Param('id') id: string, @Body() updateOrderDto: CreateOrderDto) {
     return this.orderService.update(+id, updateOrderDto);
   }
 

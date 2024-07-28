@@ -28,6 +28,8 @@ export class SareeDetailsMapper extends BaseMapper<
     productSnapshot.return_exchange_policy = source.returnExchangePolicy;
     productSnapshot.skuid = source.skuid;
     productSnapshot.subcategory = source.subCategory.name;
+    productSnapshot.maxQuantityPerCart = source.maxQuantityPerCart;
+    productSnapshot.promoDetails = source.promoDetails;
     return productSnapshot;
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

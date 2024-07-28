@@ -34,6 +34,7 @@ import { SareeDetailsMapper } from './product-details/mapper/saree-details.mappe
 import { SareeImageEntity } from './product-details/entities/saree/saree-images.entity';
 import { CartResponseMapper } from './cart/util/cart-response.mapper';
 import { AddOrUpdateCartTransaction } from './cart/transaction/add-update-cart.transaction';
+import { PromoDetailsEntity } from './promo/entity/promo-details.entity';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { AddOrUpdateCartTransaction } from './cart/transaction/add-update-cart.t
       SareeDetailsEntity,
       SareeEntity,
       SareeImageEntity,
+      PromoDetailsEntity,
     ]),
     CommonModule,
   ],

@@ -42,6 +42,25 @@ export class ProductService {
     }
   }
 
+  async findAllWithoutPaging(productTypeId: string) {
+    if (
+      !(await this.datasource
+        .getRepository(ProductTypeEntity)
+        .existsBy({ id: productTypeId }))
+    ) {
+      throw new NotFoundException('Product Type not Found');
+    }
+    const productType: ProductTypeEntity = await this.datasource
+      .getRepository(ProductTypeEntity)
+      .findOneBy({ id: productTypeId });
+    if (productType.name.toLowerCase() === ProductTypes.SAREE) {
+      /*return (await this.datasource.getRepository(SareeEntity).find()).map(
+        (sareeEntity) => this.sareeDetailsMapper.mapFrom(sareeEntity),
+      );*/
+      return await this.datasource.getRepository(SareeEntity).find();
+    }
+  }
+
   async findOne(productTypeId: string, id: string) {
     if (
       !(await this.datasource

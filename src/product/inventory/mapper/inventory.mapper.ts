@@ -3,6 +3,7 @@ import { ProductInventoryEntity } from '../entity/product-inventory.entity';
 import { ProductInventoryResponseDto } from '../dto/product-inventory-response.dto';
 import { ProductTypes } from 'src/product/product-type/enum/product-type.enum';
 import { SareeEntity } from 'src/product/product-details';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class InventoryResponseMapper {
@@ -37,7 +38,3 @@ export class InventoryResponseMapper {
     return response;
   }
 }
-function Injectable(): (target: typeof InventoryResponseMapper) => void | typeof InventoryResponseMapper {
-  throw new Error('Function not implemented.');
-}
-

@@ -69,11 +69,18 @@ export class RegisterOrUpdateProductTransaction extends BaseTransaction<
       sareeEntity.returnExchangePolicy = data.returnExchangePolicy;
       sareeEntity.cgst = data.cgst;
       sareeEntity.sgst = data.sgst;
+      sareeEntity.maxQuantityPerCart = data.maxQuantityPerCart;
       sareeDetailsEntity.blouse_desc = data.productDetails.blouseDescription;
       sareeDetailsEntity.blousePieceIncluded =
         data.productDetails.isBlousePieceIncluded;
       sareeDetailsEntity.length = data.productDetails.length;
       sareeDetailsEntity.width = data.productDetails.width;
+      sareeEntity.category = category;
+      sareeEntity.manufacturer = manufacturer;
+      sareeEntity.productType = productType;
+      sareeEntity.subCategory = subCategory;
+      sareeEntity.skuid = data.skuid;
+      sareeDetailsEntity.fabricDetails = fabricDetails;
       if (
         (await sareeRepository.existsBy({ productName: data.productName })) ||
         (data.productId &&
@@ -100,29 +107,26 @@ export class RegisterOrUpdateProductTransaction extends BaseTransaction<
               id: currentSareeEntity.sareeDetails.id,
             });
           sareeDetailsEntity.id = currentSareeDetailsEntity.id;
+          sareeDetailsEntity.product = currentSareeDetailsEntity.product;
+          sareeEntity.productImages = currentSareeEntity.productImages;
           sareeEntity.isBestSeller = currentSareeEntity.isBestSeller;
           sareeEntity.isNew = currentSareeEntity.isNew;
           sareeEntity.isTrending = currentSareeEntity.isTrending;
-          sareeEntity.sareeDetails = currentSareeDetailsEntity;
           console.trace(JSON.stringify(sareeEntity));
           console.trace(JSON.stringify(sareeDetailsEntity));
-          sareeEntity = await sareeRepository.save(sareeEntity);
           sareeDetailsEntity =
             await sareeDetailsRepository.save(sareeDetailsEntity);
+          sareeEntity.sareeDetails = sareeDetailsEntity;
+          sareeEntity = await sareeRepository.save(sareeEntity);
         } else {
           console.error('no saree entity found');
         }
       } else {
         //create product
-        sareeEntity.category = category;
-        sareeEntity.manufacturer = manufacturer;
-        sareeEntity.productType = productType;
-        sareeEntity.subCategory = subCategory;
-        sareeEntity.skuid = data.skuid;
-        sareeDetailsEntity.fabricDetails = fabricDetails;
         sareeEntity = await sareeRepository.save(sareeEntity);
         //sareeDetailsEntity.sareeId = sareeEntity.id;
         sareeDetailsEntity.product = sareeEntity;
+        sareeEntity.isActive = true;
         sareeDetailsEntity =
           await sareeDetailsRepository.save(sareeDetailsEntity);
         sareeEntity.sareeDetails = sareeDetailsEntity;

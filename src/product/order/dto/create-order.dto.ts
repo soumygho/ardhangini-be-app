@@ -13,3 +13,6 @@ export class CreateOrderDto {
   })
   orderType: OrderType;
 }
+
+//validate promos
+//validate stock of the line items

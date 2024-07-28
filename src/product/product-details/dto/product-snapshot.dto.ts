@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { SareeDetailsDto } from './saree-details.dto';
+import { PromoDetailsEntity } from 'src/product/promo/entity/promo-details.entity';
 
 export class ProductSnapshotDto {
   @ApiProperty()
@@ -34,4 +35,8 @@ export class ProductSnapshotDto {
   return_exchange_policy: string;
   @ApiProperty()
   productDetails: SareeDetailsDto;
+  @ApiProperty()
+  maxQuantityPerCart: number;
+  @ApiProperty({ type: PromoDetailsEntity, required: false })
+  promoDetails: PromoDetailsEntity;
 }

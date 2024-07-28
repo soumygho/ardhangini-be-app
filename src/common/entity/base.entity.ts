@@ -9,7 +9,7 @@ import {
 
 export abstract class BaseEntity {
   @PrimaryGeneratedColumn('uuid')
-  @ApiProperty()
+  @ApiProperty({ required: false })
   id: string;
 
   @Exclude({ toPlainOnly: true })

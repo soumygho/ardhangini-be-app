@@ -8,6 +8,7 @@ import {
   Query,
   DefaultValuePipe,
   ParseIntPipe,
+  ParseBoolPipe,
 } from '@nestjs/common';
 import { ProductService } from '../services/product.service';
 import { CreateProductDto } from '../dto/create-product.dto';
@@ -44,15 +45,20 @@ export class ProductController extends BaseController {
     isArray: true,
   })
   async findAll(
+    @Query('pagingRequired', new DefaultValuePipe(false), ParseBoolPipe)
+    pagingRequired: boolean = false,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
     @Param('productTypeId') productTypeId: string,
-  ): Promise<Pagination<SareeEntity>> {
-    return await this.productService.findAll(productTypeId, {
-      page,
-      limit,
-      route: `/product/${productTypeId}`,
-    });
+  ): Promise<Pagination<SareeEntity> | SareeEntity[]> {
+    if (pagingRequired) {
+      return await this.productService.findAll(productTypeId, {
+        page,
+        limit,
+        route: `/product/${productTypeId}`,
+      });
+    }
+    return await this.productService.findAllWithoutPaging(productTypeId);
   }
 
   @ApiOkResponse({

@@ -25,9 +25,9 @@ export class ProductImageUploadService {
       await this.fileUploadService.saveImageFile(file, ImageType.PRODUCT);
     if (
       uploadResults &&
-      uploadResults.length > 0 &&
-      uploadResults[0].Key &&
-      uploadResults[1].Key
+      uploadResults.length === 2 &&
+      uploadResults[0]?.Key &&
+      uploadResults[1]?.Key
     ) {
       console.trace(JSON.stringify(uploadResults));
       const productAndImageRepository = await this.getRepository(uploadDto);

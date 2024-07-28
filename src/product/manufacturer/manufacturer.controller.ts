@@ -11,7 +11,8 @@ import { ManufacturerService } from './manufacturer.service';
 import { CreateManufacturerDto } from './dto/create-manufacturer.dto';
 import { UpdateManufacturerDto } from './dto/update-manufacturer.dto';
 import { BaseController } from 'src/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ManufacturerEntity } from './entities/manufacturer.entity';
 
 @Controller('manufacturer')
 @ApiTags('Manufacturer Api')
@@ -25,6 +26,11 @@ export class ManufacturerController extends BaseController {
     return this.manufacturerService.create(createManufacturerDto);
   }
 
+  @ApiOkResponse({
+    description: 'All Category Response',
+    type: ManufacturerEntity,
+    isArray: true,
+  })
   @Get()
   findAll() {
     return this.manufacturerService.findAll();

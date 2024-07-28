@@ -10,8 +10,9 @@ import {
 import { ProductTypeService } from './product-type.service';
 import { CreateProductTypeDto } from './dto/create-product-type.dto';
 import { UpdateProductTypeDto } from './dto/update-product-type.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BaseController } from 'src/common';
+import { ProductTypeEntity } from './entities/product-type.entity';
 @ApiTags('product-type')
 @Controller('product-type')
 export class ProductTypeController extends BaseController {
@@ -30,6 +31,11 @@ export class ProductTypeController extends BaseController {
   @Get()
   @ApiOperation({
     description: 'Get All Product Types',
+  })
+  @ApiOkResponse({
+    description: 'Product type Response',
+    type: ProductTypeEntity,
+    isArray: true,
   })
   findAll() {
     return this.productTypeService.findAll();

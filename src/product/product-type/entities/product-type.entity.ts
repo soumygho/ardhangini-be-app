@@ -5,7 +5,10 @@ import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class ProductTypeEntity extends BaseEntity {
-  @ApiProperty()
+  @ApiProperty({
+    enum: ProductTypes,
+    default: ProductTypes.SAREE,
+  })
   @Column({
     type: 'enum',
     enum: ProductTypes,

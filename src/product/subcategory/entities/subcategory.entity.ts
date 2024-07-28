@@ -14,7 +14,8 @@ export class SubcategoryEntity extends BaseEntity {
   @ApiProperty()
   @Column({ type: 'boolean', default: false })
   isActive: boolean;
-  @ManyToOne(() => CategoryEntity)
+  @ApiProperty({ type: CategoryEntity })
+  @ManyToOne(() => CategoryEntity, { eager: true })
   @JoinColumn({ name: 'category_id' })
   category: CategoryEntity;
 }

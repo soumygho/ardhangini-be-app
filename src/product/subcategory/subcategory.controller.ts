@@ -10,10 +10,9 @@ import {
 import { SubcategoryService } from './subcategory.service';
 import { CreateSubcategoryDto } from './dto/create-subcategory.dto';
 import { UpdateSubcategoryDto } from './dto/update-subcategory.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { SubCategoryDto } from './dto/subcategory.dto';
-import { SubcategoryEntity } from './entities/subcategory.entity';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BaseController } from 'src/common';
+import { SubcategoryEntity } from './entities/subcategory.entity';
 
 @ApiTags('Subcategory')
 @Controller('subcategory')
@@ -34,6 +33,11 @@ export class SubcategoryController extends BaseController {
   @ApiOperation({
     description: 'Fetch All SubCategories',
   })
+  @ApiOkResponse({
+    description: 'All Category Response',
+    type: SubcategoryEntity,
+    isArray: true,
+  })
   findAll() {
     return this.subcategoryService.findAll();
   }
@@ -41,6 +45,11 @@ export class SubcategoryController extends BaseController {
   @Get('/category/:categoryId')
   @ApiOperation({
     description: 'Fetch All SubCategories by category',
+  })
+  @ApiOkResponse({
+    description: 'All Category Response',
+    type: SubcategoryEntity,
+    isArray: true,
   })
   findAllByCategory(@Param('categoryId') categoryId: string) {
     return this.subcategoryService.findByCategory(categoryId);

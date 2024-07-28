@@ -4,6 +4,7 @@ import { UpdateProductTypeDto } from './dto/update-product-type.dto';
 import { Repository } from 'typeorm';
 import { ProductTypeEntity } from './entities/product-type.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ApiOkResponse } from '@nestjs/swagger';
 
 @Injectable()
 export class ProductTypeService {
@@ -20,7 +21,11 @@ export class ProductTypeService {
     productType = await this.productTypeRepository.create(productType);
     return await this.productTypeRepository.save(productType);
   }
-
+  @ApiOkResponse({
+    description: 'All fabric Response',
+    type: ProductTypeEntity,
+    isArray: true,
+  })
   async findAll(): Promise<ProductTypeEntity[]> {
     return await this.productTypeRepository.find();
   }

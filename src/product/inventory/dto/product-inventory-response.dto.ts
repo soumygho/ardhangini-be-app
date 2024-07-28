@@ -14,7 +14,7 @@ export class ProductInventoryResponseDto {
   userMobile: string;
   @ApiProperty()
   quantity: number;
-  @ApiProperty()
+  @ApiProperty({ enum: TransactionType })
   transactionType: TransactionType;
   @ApiProperty()
   productName: string;

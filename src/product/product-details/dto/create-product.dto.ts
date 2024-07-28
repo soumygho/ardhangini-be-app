@@ -95,4 +95,11 @@ export class CreateProductDto {
   })
   @IsNotEmpty()
   sgst: number;
+
+  @ApiProperty({
+    example: '3',
+    required: true,
+  })
+  @IsNotEmpty()
+  maxQuantityPerCart: number;
 }

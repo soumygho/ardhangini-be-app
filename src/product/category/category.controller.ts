@@ -13,7 +13,13 @@ import {
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { CategoryEntity } from './entities/category.entity';
 import { BaseController } from 'src/common';
@@ -44,11 +50,16 @@ export class CategoryController extends BaseController {
   @ApiOperation({
     description: 'List Category with default pagination 10',
   })
-  findAll(
+  @ApiOkResponse({
+    description: 'All Category Response',
+    type: CategoryEntity,
+    isArray: true,
+  })
+  async findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
-  ): Promise<Pagination<CategoryEntity>> {
-    return this.categoryService.findAll({
+  ): Promise<CategoryEntity[]> {
+    return await this.categoryService.findAll({
       page,
       limit,
       route: '/category',
@@ -60,6 +71,9 @@ export class CategoryController extends BaseController {
     return this.categoryService.findOne(id);
   }
 
+  @ApiOperation({
+    description: 'Update Category.',
+  })
   @Patch(':id')
   update(
     @Param('id') id: string,

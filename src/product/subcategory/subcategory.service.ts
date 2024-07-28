@@ -6,6 +6,7 @@ import { SubcategoryEntity } from './entities/subcategory.entity';
 import { DataSource, Repository } from 'typeorm';
 import { CategoryService } from '../category/category.service';
 import { CategoryEntity } from '../category/entities/category.entity';
+import { entities } from 'src/entities';
 
 @Injectable()
 export class SubcategoryService {
@@ -55,11 +56,16 @@ export class SubcategoryService {
   async findByCategory(categoryId: string): Promise<SubcategoryEntity[]> {
     const category: CategoryEntity = await this.getCategory(categoryId);
     if (category !== undefined) {
-      return await this.datasource
+      let subCategories: SubcategoryEntity[] = await this.datasource
         .getRepository(SubcategoryEntity)
         .createQueryBuilder('subcategory')
         .where('subcategory.category_id = :categoryId', { categoryId })
         .getMany();
+      subCategories = subCategories.map((subCategory) => {
+        subCategory.category = category;
+        return subCategory;
+      });
+      return subCategories;
     } else {
       throw new NotFoundException(`Category with id ${categoryId} not found.`);
     }

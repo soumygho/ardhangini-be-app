@@ -7,10 +7,11 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { BaseController } from 'src/common';
 import { FabricService } from '../service/fabric.service';
 import { CreateFabricDto } from '../dto/create-fabric.dto';
+import { FabricDetailsEntity } from '../entity/fabric-details.entity';
 
 @Controller('fabric-details')
 @ApiTags('Fabric details Api')
@@ -24,6 +25,11 @@ export class FabricController extends BaseController {
     return this.fabricService.create(dto);
   }
 
+  @ApiOkResponse({
+    description: 'All fabric Response',
+    type: FabricDetailsEntity,
+    isArray: true,
+  })
   @Get()
   findAll() {
     return this.fabricService.getAll();
@@ -34,9 +40,9 @@ export class FabricController extends BaseController {
     return this.fabricService.getById(id);
   }
 
-  @Patch()
-  update(@Body() dto: CreateFabricDto) {
-    return this.fabricService.update(dto);
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() dto: CreateFabricDto) {
+    return this.fabricService.update(id, dto);
   }
 
   @Delete(':id')

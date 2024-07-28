@@ -17,14 +17,16 @@ export class FabricService {
     return this.fabricRepository.save(fabricEntity);
   }
 
-  async update(dto: CreateFabricDto) {
-    if (!(await this.fabricRepository.existsBy({ id: dto.id }))) {
+  async update(id: string, dto: CreateFabricDto) {
+    if (!(await this.fabricRepository.existsBy({ id: id }))) {
       throw new NotFoundException('Fabric details not found');
     }
     const fabricEntity: FabricDetailsEntity = this.fabricRepository.create();
     Object.assign(fabricEntity, dto);
+    fabricEntity.id = id;
     return this.fabricRepository.save(fabricEntity);
   }
+
   async getById(fabricId: string) {
     return this.fabricRepository.findOneBy({ id: fabricId });
   }
