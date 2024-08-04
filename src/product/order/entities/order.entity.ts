@@ -1,10 +1,18 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { BaseEntity } from '../../../common';
 import { OrderStatus, OrderType } from '../enum/order.enum';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { PaymentEntity } from 'src/product/payment/entity/payment.entity';
 import { OrderCancellationReasonType } from '../enum/order-cancellation-type.enum';
 import { CartDetailsEntity } from 'src/product/cart/entity/cart-details.entity';
+import { OrderLineItemEntity } from './order-line-item.entity';
 
 @Entity('order_details')
 export class OrderDetailsEntity extends BaseEntity {
@@ -15,6 +23,12 @@ export class OrderDetailsEntity extends BaseEntity {
   @OneToOne(() => PaymentEntity, { nullable: true, eager: true })
   @JoinColumn({ name: 'payment_id' })
   paymentDetails: PaymentEntity;
+
+  @OneToMany(() => OrderLineItemEntity, (lineItem) => lineItem.orderDetails, {
+    eager: true,
+    nullable: true,
+  })
+  lineItems: OrderLineItemEntity[];
 
   @OneToOne(() => CartDetailsEntity, { eager: true })
   cartDetails: CartDetailsEntity;

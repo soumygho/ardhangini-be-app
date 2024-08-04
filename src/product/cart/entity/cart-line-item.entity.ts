@@ -1,7 +1,8 @@
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { CartDetailsEntity } from './cart-details.entity';
 import { Exclude } from 'class-transformer';
 import { ProductTypeEntity } from 'src/product/product-type/entities/product-type.entity';
+import { BaseEntity } from 'src/common';
 
 @Entity('cart_line_item')
 export class CartLineItemEntity extends BaseEntity {
@@ -15,12 +16,4 @@ export class CartLineItemEntity extends BaseEntity {
   cartDetails: CartDetailsEntity;
   @Column({ type: 'int' })
   quantity: number;
-  @Column({ type: 'numeric', nullable: true })
-  perItemActualPrice: number;
-  @Column({ type: 'numeric', nullable: true })
-  perItemOfferPrice: number;
-  @Column({ type: 'numeric', nullable: true })
-  totalActualPrice: number;
-  @Column({ type: 'numeric', nullable: true })
-  totalOfferPrice: number;
 }

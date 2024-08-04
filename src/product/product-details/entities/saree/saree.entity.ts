@@ -1,8 +1,13 @@
-import { Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import { Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { ProductEntity } from '../common/product.entity';
 import { SareeDetailsEntity } from './saree-details.entity';
 import { SareeImageEntity } from './saree-images.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { ProductCollectionEntity } from 'src/product/collections/entity/product-collection.entity';
+import { ProductColorEntity } from 'src/product/colours/entity/product-colour.entity';
+import { ProductPrintsEntity } from 'src/product/prints/entity/product-prints.entity';
+import { ProductOccassionEntity } from 'src/product/product-occasion/entity/product-occassion.entity';
+import { ProductStyleEntity } from 'src/product/product-style/entity/product-style.entity';
 
 @Entity('saree')
 export class SareeEntity extends ProductEntity {
@@ -22,4 +27,24 @@ export class SareeEntity extends ProductEntity {
     nullable: true,
   })
   productImages: SareeImageEntity[];
+
+  @ManyToOne(() => ProductCollectionEntity, { nullable: true, eager: true })
+  @JoinColumn({ name: 'collection_id' })
+  collection: ProductCollectionEntity;
+
+  @ManyToOne(() => ProductColorEntity, { nullable: true, eager: true })
+  @JoinColumn({ name: 'color_id' })
+  colour: ProductColorEntity;
+
+  @ManyToOne(() => ProductPrintsEntity, { nullable: true, eager: true })
+  @JoinColumn({ name: 'print_id' })
+  print: ProductPrintsEntity;
+
+  @ManyToOne(() => ProductOccassionEntity, { nullable: true, eager: true })
+  @JoinColumn({ name: 'occassion_id' })
+  occassion: ProductOccassionEntity;
+
+  @ManyToOne(() => ProductStyleEntity, { nullable: true, eager: true })
+  @JoinColumn({ name: 'style_id' })
+  style: ProductStyleEntity;
 }

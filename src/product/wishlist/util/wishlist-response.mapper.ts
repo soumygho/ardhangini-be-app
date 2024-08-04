@@ -28,11 +28,14 @@ export class WishListResponseMapper {
         const cartLineItemResponse: WishListLineItemResponse =
           new WishListLineItemResponse();
         Object.assign(cartLineItemResponse, lineItemEntity);
+        cartLineItemResponse.productId = lineItemEntity.productId;
+        cartLineItemResponse.productTypeId = lineItemEntity.productType.id;
         cartLineItemResponse.productName = saree.productName;
         cartLineItemResponse.productThumbnail =
           saree.productImages[0]!.thumbnailSource;
         cartLineItemResponse.actualPricePerItem = saree.actualprice;
-        cartLineItemResponse.finalPricePerItem = saree.offerprice;
+        cartLineItemResponse.finalPricePerItem =
+          saree.offerprice + saree.offerprice * 0.12 * 2;
         cartLineItemResponse.sgst = saree.sgst;
         cartLineItemResponse.cgst = saree.cgst;
         cartLineItemResponse.availableQuantity = saree.available_qty;

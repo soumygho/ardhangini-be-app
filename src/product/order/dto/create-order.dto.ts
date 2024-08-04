@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { OrderType } from '../enum/order.enum';
+import { PaymentMethod } from 'src/product/payment/enum/payment-method.enum';
 
 export class CreateOrderDto {
   @ApiProperty()
@@ -12,6 +13,16 @@ export class CreateOrderDto {
     default: OrderType.COD,
   })
   orderType: OrderType;
+  @ApiProperty()
+  deliveryAddress: string;
+  @ApiProperty()
+  billingAddress: string;
+  @ApiProperty({
+    enum: PaymentMethod,
+    required: true,
+    default: PaymentMethod.COD,
+  })
+  paymentMethod: PaymentMethod;
 }
 
 //validate promos

@@ -1,7 +1,7 @@
 import { BaseTransaction } from 'src/common/entity/BaseTransaction';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { ProductTypeEntity } from 'src/product/product-type/entities/product-type.entity';
-import { NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ProductTypes } from 'src/product/product-type/enum/product-type.enum';
 import { SareeEntity } from 'src/product/product-details';
 import { UserEntity } from 'src/user/entities/user.entity';
@@ -14,6 +14,7 @@ import { WishListResponseMapper } from '../util/wishlist-response.mapper';
 import { WishListEntity } from '../entity/wishlist.entity';
 import { WishListLineItemEntity } from '../entity/wishlist-item.entity';
 
+@Injectable()
 export class AddOrUpdateWishListTransaction extends BaseTransaction<
   WishListUpdateDto,
   WishListDetailsResponse
@@ -54,29 +55,34 @@ export class AddOrUpdateWishListTransaction extends BaseTransaction<
     const lineItemEntities: WishListLineItemEntity[] = [];
 
     data.lineItems.forEach(async (lineItem: WishListLineItemDto) => {
-      const productType: ProductTypeEntity =
+      /*const productType: ProductTypeEntity =
         await productTypeRepository.findOneBy({ id: lineItem.typeId });
       if (!productType) {
         throw new NotFoundException('ProductType not found.');
+      }*/
+      const productRepository = manager.getRepository(SareeEntity);
+      // if (productType.name.toLowerCase() === ProductTypes.SAREE) {}
+      const saree: SareeEntity = await productRepository.findOneBy({
+        id: lineItem.productId,
+      });
+      if (!saree) {
+        throw new NotFoundException('Product not found.');
       }
-      let productRepository;
-      if (productType.name.toLowerCase() === ProductTypes.SAREE) {
-        productRepository = manager.getRepository(SareeEntity);
-        const saree: SareeEntity = await productRepository.findOneBy({
-          id: lineItem.productId,
-        });
-        if (!saree) {
-          throw new NotFoundException('Product not found.');
-        }
+      if (
+        !(await wishListLineItemRepository.existsBy({
+          wishListDetails: wishListDetails,
+          productId: lineItem.productId,
+        }))
+      ) {
         const lineItemEntity: WishListLineItemEntity =
           wishListLineItemRepository.create();
         lineItemEntity.wishListDetails = wishListDetails;
         lineItemEntity.productId = saree.id;
-        lineItemEntity.productType = productType;
+        lineItemEntity.productType = saree.productType;
         lineItemEntities.push(lineItemEntity);
       }
     });
-    wishListLineItemRepository.delete({ wishListDetails: wishListDetails });
+    //wishListLineItemRepository.delete({ wishListDetails: wishListDetails });
     lineItemEntities.forEach(async (lineItemEntity) => {
       await wishListLineItemRepository.save(lineItemEntity);
     });

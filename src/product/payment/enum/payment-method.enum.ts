@@ -4,4 +4,5 @@ export enum PaymentMethod {
   DEBITCARD = 'debit card',
   UPI = 'upi',
   NETBANKING = 'netbanking',
+  ONLINEPAYMENT = 'online payment',
 }

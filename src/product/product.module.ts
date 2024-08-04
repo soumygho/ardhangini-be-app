@@ -38,6 +38,32 @@ import { PromoDetailsEntity } from './promo/entity/promo-details.entity';
 import { ProductCollectionEntity } from './collections/entity/product-collection.entity';
 import { ProductColelctionController } from './collections/controller/product-collection.controller';
 import { ProductCollectionService } from './collections/service/collection.service';
+import { ProductStyleController } from './product-style/controller/product-style.controller';
+import { ProductStyleService } from './product-style/service/product-style.service';
+import { ProductStyleEntity } from './product-style/entity/product-style.entity';
+import { ProductOccassionEntity } from './product-occasion/entity/product-occassion.entity';
+import { ProductOccassionController } from './product-occasion/controller/product-collection.controller';
+import { ProductColorEntity } from './colours/entity/product-colour.entity';
+import { ProductColorController } from './colours/controller/product-color.controller';
+import { ProductOccassionsService } from './product-occasion/service/product-occassions.service';
+import { ProductColorService } from './colours/service/collection.service';
+import { ProductPrintsEntity } from './prints/entity/product-prints.entity';
+import { ProductPrintsController } from './prints/controller/product-collection.controller';
+import { ProductPrintsService } from './prints/service/product-prints.service';
+import { PromoDetailsController } from './promo/controller/promo-details.controller';
+import { PromoDetailsService } from './promo/service/promo-details.service';
+import { OrderDetailsMapper } from './order/mapper/order-details.mapper';
+import { OrderDetailsEntity } from './order/entities/order.entity';
+import { CartDetailsEntity } from './cart/entity/cart-details.entity';
+import { OrderLineItemEntity } from './order/entities/order-line-item.entity';
+import { CartLineItemEntity } from './cart/entity/cart-line-item.entity';
+import { OrderTimeLineEntity } from './order/entities/order-timeline.entity';
+import { PaymentEntity } from './payment/entity/payment.entity';
+import { CreateOrderTransaction } from './order/transactions/create-order.transaction';
+import { WishListEntity } from './wishlist/entity/wishlist.entity';
+import { WishListLineItemEntity } from './wishlist/entity/wishlist-item.entity';
+import { AddOrUpdateWishListTransaction } from './wishlist/transaction/add-update-wishlist.transaction';
+import { WishListResponseMapper } from './wishlist/util/wishlist-response.mapper';
 
 @Module({
   imports: [
@@ -53,6 +79,19 @@ import { ProductCollectionService } from './collections/service/collection.servi
       SareeImageEntity,
       PromoDetailsEntity,
       ProductCollectionEntity,
+      ProductStyleEntity,
+      ProductOccassionEntity,
+      ProductColorEntity,
+      ProductPrintsEntity,
+      PromoDetailsEntity,
+      OrderDetailsEntity,
+      CartDetailsEntity,
+      OrderLineItemEntity,
+      CartLineItemEntity,
+      OrderTimeLineEntity,
+      PaymentEntity,
+      WishListEntity,
+      WishListLineItemEntity,
     ]),
     CommonModule,
   ],
@@ -67,6 +106,11 @@ import { ProductCollectionService } from './collections/service/collection.servi
     ProductImageController,
     FabricController,
     ProductColelctionController,
+    ProductStyleController,
+    ProductOccassionController,
+    ProductColorController,
+    ProductPrintsController,
+    PromoDetailsController,
   ],
   providers: [
     CategoryService,
@@ -83,6 +127,17 @@ import { ProductCollectionService } from './collections/service/collection.servi
     CartResponseMapper,
     AddOrUpdateCartTransaction,
     ProductCollectionService,
+    ProductStyleService,
+    ProductOccassionsService,
+    ProductColorService,
+    ProductPrintsService,
+    PromoDetailsService,
+    OrderDetailsMapper,
+    OrderService,
+    CreateOrderTransaction,
+    AddOrUpdateWishListTransaction,
+    PromoDetailsService,
+    WishListResponseMapper,
   ],
   exports: [],
 })

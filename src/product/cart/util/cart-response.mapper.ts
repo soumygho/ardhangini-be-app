@@ -28,17 +28,25 @@ export class CartResponseMapper {
         const cartLineItemResponse: CartLineItemResponse =
           new CartLineItemResponse();
         Object.assign(cartLineItemResponse, lineItemEntity);
+        cartLineItemResponse.productId = lineItemEntity.productId;
+        cartLineItemResponse.productTypeId = lineItemEntity.productType.id;
         cartLineItemResponse.productName = saree.productName;
         cartLineItemResponse.productThumbnail =
           saree.productImages[0]!.thumbnailSource;
-        cartLineItemResponse.actualPricePerItem = saree.actualprice;
-        cartLineItemResponse.finalPricePerItem = saree.offerprice;
+        cartLineItemResponse.actualPricePerItem =
+          saree.actualprice + 2 * saree.offerprice * 0.12;
+        cartLineItemResponse.finalPricePerItem =
+          saree.offerprice + 2 * saree.offerprice * 0.12;
+        cartLineItemResponse.quantity = lineItemEntity.quantity;
         cartLineItemResponse.actualTotalPrice =
           saree.actualprice * lineItemEntity.quantity;
         cartLineItemResponse.finalTotalPrice =
-          saree.offerprice * lineItemEntity.quantity;
-        cartLineItemResponse.totalSgst = saree.sgst * lineItemEntity.quantity;
-        cartLineItemResponse.totalCgst = saree.cgst * lineItemEntity.quantity;
+          saree.offerprice * lineItemEntity.quantity +
+          2 * saree.offerprice * lineItemEntity.quantity * 0.12;
+        cartLineItemResponse.totalSgst =
+          saree.offerprice * lineItemEntity.quantity * 0.12;
+        cartLineItemResponse.totalCgst =
+          saree.offerprice * lineItemEntity.quantity * 0.12;
         lineItems.push(cartLineItemResponse);
       }
     });

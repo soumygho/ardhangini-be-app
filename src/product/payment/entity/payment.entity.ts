@@ -27,7 +27,7 @@ export class PaymentEntity extends BaseEntity {
     nullable: false,
   })
   paymentStatus: PaymentStatus;
-  @Column({ name: 'gateway_order_id', type: 'varchar' })
+  @Column({ name: 'gateway_order_id', type: 'varchar', nullable: true })
   gatewayOrderId: string;
   @Column({ name: 'gateway_payment_id', type: 'varchar', nullable: true })
   gatewayPaymentId: string;

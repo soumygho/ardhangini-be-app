@@ -61,15 +61,6 @@ export abstract class ProductEntity extends BaseEntity {
   @Column({ type: 'numeric' })
   sgst: number;
   @ApiProperty()
-  @Column({ name: 'is_new', nullable: true, default: false })
-  isNew: boolean;
-  @ApiProperty()
-  @Column({ name: 'is_trending', nullable: true, default: false })
-  isTrending: boolean;
-  @ApiProperty()
-  @Column({ name: 'is_best_seller', nullable: true, default: false })
-  isBestSeller: boolean;
-  @ApiProperty()
   @Column({ name: 'max_quantity_per_cart', default: 3, type: 'numeric' })
   maxQuantityPerCart: number;
 
@@ -81,4 +72,17 @@ export abstract class ProductEntity extends BaseEntity {
   })
   @JoinColumn({ name: 'promo_details_id' })
   promoDetails: PromoDetailsEntity;
+
+  @ApiProperty()
+  @Column({ name: 'is_new', nullable: true, default: false })
+  isNew: boolean;
+  @ApiProperty()
+  @Column({ name: 'is_trending', nullable: true, default: false })
+  isTrending: boolean;
+  @ApiProperty()
+  @Column({ name: 'is_best_seller', nullable: true, default: false })
+  isBestSeller: boolean;
+  @ApiProperty()
+  @Column({ name: 'is_exclusive', nullable: true, default: false })
+  isExclusive: boolean;
 }

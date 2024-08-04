@@ -1,33 +1,40 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 import { BaseEntity } from '../../../common';
+import { CartLineItemEntity } from 'src/product/cart/entity/cart-line-item.entity';
 import { OrderDetailsEntity } from './order.entity';
-import { Exclude } from 'class-transformer';
 
 @Entity('order_line_items')
 export class OrderLineItemEntity extends BaseEntity {
-  @ManyToOne(() => OrderDetailsEntity)
+  @ManyToOne(() => OrderDetailsEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'order_id' })
   orderDetails: OrderDetailsEntity;
-
-  @Exclude({ toPlainOnly: true })
-  productTypeId: string;
-  @Exclude({ toPlainOnly: true })
-  productId: string;
-
-  @Column({ type: 'int' })
-  orderQty: number;
+  @OneToOne(() => CartLineItemEntity)
+  @JoinColumn({ name: 'cart_line_item_id' })
+  cartLineItem: CartLineItemEntity;
   @Column({ type: 'numeric' })
-  listedPricePerItem: number;
+  perItemActualPrice: number;
   @Column({ type: 'numeric' })
-  offerPrice: number;
+  perItemOfferPrice: number;
   @Column({ type: 'numeric' })
-  totallistedPrice: number;
+  perItemFinalPrice: number;
   @Column({ type: 'numeric' })
-  totalofferPrice: number;
+  totalActualPrice: number;
   @Column({ type: 'numeric' })
-  shippingCharge: number;
+  totalOfferPrice: number;
   @Column({ type: 'numeric' })
-  sgst: number;
+  sgstPerItem: number;
   @Column({ type: 'numeric' })
-  cgst: number;
+  cgstPerItem: number;
+  @Column({ type: 'numeric' })
+  totalSgst: number;
+  @Column({ type: 'numeric' })
+  totalCgst: number;
+  @Column({ type: 'varchar', nullable: true })
+  promoDescription: string;
+  @Column({ type: 'numeric', default: 0, nullable: true })
+  promoDiscountPerItem: number;
+  @Column({ type: 'numeric', default: 0, nullable: true })
+  totalPromoDiscount: number;
+  @Column({ type: 'numeric' })
+  totalFinalPrice: number;
 }

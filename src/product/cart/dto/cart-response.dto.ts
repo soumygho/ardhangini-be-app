@@ -3,6 +3,10 @@ import { CartLineItemDto } from './cart-update.dto';
 
 export class CartLineItemResponse extends CartLineItemDto {
   @ApiProperty()
+  productId: string;
+  @ApiProperty()
+  productTypeId: string;
+  @ApiProperty()
   productThumbnail: string;
   @ApiProperty()
   productName: string;
@@ -18,6 +22,8 @@ export class CartLineItemResponse extends CartLineItemDto {
   totalSgst: number;
   @ApiProperty()
   totalCgst: number;
+  @ApiProperty()
+  quantity: number;
 }
 
 export class CartDetailsResponse {
@@ -35,4 +41,6 @@ export class CartDetailsResponse {
   totalSgst: number;
   @ApiProperty()
   totalCgst: number;
+  @ApiProperty()
+  shipping: number;
 }

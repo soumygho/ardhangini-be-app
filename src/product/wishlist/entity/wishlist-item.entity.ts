@@ -11,7 +11,9 @@ export class WishListLineItemEntity extends BaseEntity {
   wishListDetails: WishListEntity;
 
   @Exclude({ toPlainOnly: true })
+  @Column({ name: 'product_id', type: 'varchar' })
   productId: string;
+
   @Exclude({ toPlainOnly: true })
   @ManyToOne(() => ProductTypeEntity)
   productType: ProductTypeEntity;

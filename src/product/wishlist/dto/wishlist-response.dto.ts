@@ -3,6 +3,10 @@ import { WishListLineItemDto } from './wishlist-update.dto';
 
 export class WishListLineItemResponse extends WishListLineItemDto {
   @ApiProperty()
+  productId: string;
+  @ApiProperty()
+  productTypeId: string;
+  @ApiProperty()
   productThumbnail: string;
   @ApiProperty()
   productName: string;

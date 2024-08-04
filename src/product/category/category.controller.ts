@@ -17,10 +17,8 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
-  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Pagination } from 'nestjs-typeorm-paginate';
 import { CategoryEntity } from './entities/category.entity';
 import { BaseController } from 'src/common';
 @ApiTags('category')

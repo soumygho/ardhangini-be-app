@@ -3,13 +3,80 @@ import { ProductSnapshotDto } from '../dto/product-snapshot.dto';
 import { BaseMapper } from 'src/common/mapper/base.mapper';
 import { SareeEntity } from '../entities';
 import { SareeDetailsDto } from '../dto/saree-details.dto';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { DataSource, Repository } from 'typeorm';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { CartDetailsEntity } from 'src/product/cart/entity/cart-details.entity';
+import { WishListEntity } from 'src/product/wishlist/entity/wishlist.entity';
+import { ProductSnapshotWithUserDto } from '../dto/product-snapshot-with-user.dto';
+import { CartLineItemEntity } from 'src/product/cart/entity/cart-line-item.entity';
+import { WishListLineItemEntity } from 'src/product/wishlist/entity/wishlist-item.entity';
 
 @Injectable()
 export class SareeDetailsMapper extends BaseMapper<
   SareeEntity,
   ProductSnapshotDto
 > {
+  constructor(private readonly dataSource: DataSource) {
+    super();
+  }
+  public async mapAndEnrichWithUserData(
+    userId: string,
+    source: SareeEntity,
+  ): Promise<ProductSnapshotWithUserDto> {
+    const userRepository: Repository<UserEntity> =
+      this.dataSource.getRepository(UserEntity);
+    const cartRepository: Repository<CartDetailsEntity> =
+      this.dataSource.getRepository(CartDetailsEntity);
+    const wishListRepository: Repository<WishListEntity> =
+      this.dataSource.getRepository(WishListEntity);
+    const cartLineItemRepository: Repository<CartLineItemEntity> =
+      this.dataSource.getRepository(CartLineItemEntity);
+    const wishListLineItemRepository: Repository<WishListLineItemEntity> =
+      this.dataSource.getRepository(WishListLineItemEntity);
+
+    if (userId) {
+      if (!(await userRepository.existsBy({ id: userId }))) {
+        throw new NotFoundException('User Not Found.');
+      }
+      const userDetails: UserEntity = await userRepository.findOneBy({
+        id: userId,
+      });
+      const dto: ProductSnapshotWithUserDto = new ProductSnapshotWithUserDto();
+      Object.assign(dto, this.mapFrom(source));
+      dto.isCarted = false;
+      dto.isWishListed = false;
+      const cartDetails: CartDetailsEntity = await cartRepository.findOneBy({
+        userDetails: userDetails,
+        isOrdered: false,
+      });
+      const wishListDetails: WishListEntity =
+        await wishListRepository.findOneBy({
+          user: userDetails,
+        });
+      if (cartDetails) {
+        if (
+          await cartLineItemRepository.existsBy({
+            cartDetails: cartDetails,
+            productId: source.id,
+          })
+        ) {
+          dto.isCarted = true;
+        }
+      }
+      if (wishListDetails) {
+        if (
+          await wishListLineItemRepository.existsBy({
+            wishListDetails: wishListDetails,
+            productId: source.id,
+          })
+        ) {
+          dto.isWishListed = true;
+        }
+      }
+      return dto;
+    }
+  }
   public mapFrom(source: SareeEntity): ProductSnapshotDto {
     const productSnapshot: ProductSnapshotDto = new ProductSnapshotDto();
     productSnapshot.productid = source.id;
@@ -18,8 +85,8 @@ export class SareeDetailsMapper extends BaseMapper<
     productSnapshot.averageReview = source.averageReview;
     productSnapshot.category = source.category.name;
     productSnapshot.isBestSeller = source.isBestSeller;
-    productSnapshot.isNew = true;
-    productSnapshot.isTrending = true;
+    productSnapshot.isNew = false;
+    productSnapshot.isTrending = source.isTrending;
     productSnapshot.offerprice = source.offerprice;
     productSnapshot.productDetails = this.mapToSareeDetailsDto(source);
     productSnapshot.productdescription = source.productDescription;
@@ -30,6 +97,12 @@ export class SareeDetailsMapper extends BaseMapper<
     productSnapshot.subcategory = source.subCategory.name;
     productSnapshot.maxQuantityPerCart = source.maxQuantityPerCart;
     productSnapshot.promoDetails = source.promoDetails;
+    productSnapshot.isExclusive = source.isExclusive;
+    productSnapshot.productCollection = source.collection;
+    productSnapshot.productColour = source.colour;
+    productSnapshot.productOccassion = source.occassion;
+    productSnapshot.productStyle = source.style;
+    productSnapshot.productPrint = source.print;
     return productSnapshot;
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

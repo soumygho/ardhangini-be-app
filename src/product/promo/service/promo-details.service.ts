@@ -2,7 +2,9 @@ import { Repository } from 'typeorm';
 import { PromoDetailsEntity } from '../entity/promo-details.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePromoDto } from '../dto/create-promo.dto';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class PromoDetailsService {
   constructor(
     @InjectRepository(PromoDetailsEntity)

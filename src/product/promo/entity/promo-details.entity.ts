@@ -14,16 +14,16 @@ export class PromoDetailsEntity extends BaseEntity {
   @Column({ type: 'varchar' })
   description: string;
   @ApiProperty({ required: false })
-  @Column({ type: 'numeric', nullable: true })
+  @Column({ type: 'numeric', nullable: true, default: 0 })
   minimumOrderValue: number;
   @ApiProperty({
     required: false,
   })
-  @Column({ type: 'numeric', nullable: true })
+  @Column({ type: 'numeric', nullable: true, default: 0 })
   discountPercentage: number;
   @ApiProperty({
     required: false,
   })
-  @Column({ type: 'numeric', nullable: true })
+  @Column({ type: 'numeric', nullable: true, default: 0 })
   flatDiscount: number;
 }
