@@ -64,6 +64,12 @@ import { WishListEntity } from './wishlist/entity/wishlist.entity';
 import { WishListLineItemEntity } from './wishlist/entity/wishlist-item.entity';
 import { AddOrUpdateWishListTransaction } from './wishlist/transaction/add-update-wishlist.transaction';
 import { WishListResponseMapper } from './wishlist/util/wishlist-response.mapper';
+import { SareeService } from './product-details/services/saree.service';
+import { SareeController } from './product-details/controller/saree-product.controller';
+import { CartController } from './cart/controller/cart.controller';
+import { WishListController } from './wishlist/controller/wish-list.controller';
+import { CartService } from './cart/service/cart.service';
+import { WishListService } from './wishlist/service/wish-list.service';
 
 @Module({
   imports: [
@@ -111,6 +117,10 @@ import { WishListResponseMapper } from './wishlist/util/wishlist-response.mapper
     ProductColorController,
     ProductPrintsController,
     PromoDetailsController,
+    SareeController,
+    CartController,
+    WishListController,
+    PromoDetailsController,
   ],
   providers: [
     CategoryService,
@@ -138,6 +148,9 @@ import { WishListResponseMapper } from './wishlist/util/wishlist-response.mapper
     AddOrUpdateWishListTransaction,
     PromoDetailsService,
     WishListResponseMapper,
+    SareeService,
+    CartService,
+    WishListService,
   ],
   exports: [],
 })

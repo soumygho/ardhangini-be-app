@@ -3,7 +3,7 @@ import { ProductSnapshotDto } from '../dto/product-snapshot.dto';
 import { BaseMapper } from 'src/common/mapper/base.mapper';
 import { SareeEntity } from '../entities';
 import { SareeDetailsDto } from '../dto/saree-details.dto';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { CartDetailsEntity } from 'src/product/cart/entity/cart-details.entity';
@@ -34,16 +34,18 @@ export class SareeDetailsMapper extends BaseMapper<
       this.dataSource.getRepository(CartLineItemEntity);
     const wishListLineItemRepository: Repository<WishListLineItemEntity> =
       this.dataSource.getRepository(WishListLineItemEntity);
-
+    const dto: ProductSnapshotWithUserDto = new ProductSnapshotWithUserDto();
+    Object.assign(dto, this.mapFrom(source));
+    dto.isCarted = false;
+    dto.isWishListed = false;
     if (userId) {
       if (!(await userRepository.existsBy({ id: userId }))) {
-        throw new NotFoundException('User Not Found.');
+        dto.isCarted = false;
+        dto.isWishListed = false;
       }
       const userDetails: UserEntity = await userRepository.findOneBy({
         id: userId,
       });
-      const dto: ProductSnapshotWithUserDto = new ProductSnapshotWithUserDto();
-      Object.assign(dto, this.mapFrom(source));
       dto.isCarted = false;
       dto.isWishListed = false;
       const cartDetails: CartDetailsEntity = await cartRepository.findOneBy({

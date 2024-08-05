@@ -12,6 +12,8 @@ export enum FilterType {
   PRINT = 'print',
   EXCLUSIVE = 'exclusive',
   OCCASSION = 'occassion',
+  BESTSELLER = 'bestseller',
+  TRENDING = 'trending',
 }
 
 export class SareeFilter {
@@ -21,13 +23,19 @@ export class SareeFilter {
     default: FilterType.NONE,
   })
   filterType: FilterType;
-  @ApiProperty()
+  @ApiProperty({ required: false })
   minValue: string | number;
-  @ApiProperty()
+  @ApiProperty({ required: false })
   maxValue: string | number;
+  @ApiProperty({ required: false })
+  values: string[];
 }
 
 export class SareeFilterDto {
-  @ApiProperty({ type: SareeFilter, isArray: true })
+  @ApiProperty({
+    required: false,
+  })
+  userId: string;
+  @ApiProperty({ type: SareeFilter, isArray: true, required: false })
   filters: SareeFilter[];
 }

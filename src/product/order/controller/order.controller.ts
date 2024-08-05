@@ -1,46 +1,72 @@
 import { CreateOrderDto } from './../dto/create-order.dto';
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { OrderService } from '../services/order.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BaseController } from 'src/common';
+import { OrderResponse } from '../dto/order-response.dto';
 
-@Controller('order')
+@Controller('order-details')
 @ApiTags('Order Api')
 export class OrderController extends BaseController {
   constructor(private readonly orderService: OrderService) {
     super();
   }
 
+  @ApiOperation({
+    description: 'place an order',
+  })
+  @ApiOkResponse({
+    description: 'Order Response',
+    type: OrderResponse,
+  })
   @Post()
   create(@Body() createOrderDto: CreateOrderDto) {
     return this.orderService.create(createOrderDto);
   }
 
+  @ApiOperation({
+    description: 'get all orders for admin',
+  })
+  @ApiOkResponse({
+    description: 'Order Response',
+    type: OrderResponse,
+    isArray: true,
+  })
   @Get()
   findAll() {
     return this.orderService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.orderService.findOne(+id);
+  @ApiOperation({
+    description: 'get all orders for user',
+  })
+  @ApiOkResponse({
+    description: 'Order Response',
+    type: OrderResponse,
+    isArray: true,
+  })
+  @Get(':userId')
+  findAllByUserId(@Param('userId') userId: string) {
+    return this.orderService.findAllByUserId(userId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: CreateOrderDto) {
-    return this.orderService.update(+id, updateOrderDto);
+  @Post('return')
+  returnOrder() {
+    return this.orderService.returnOrder();
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.orderService.remove(+id);
+  @Post('complete-cod-order')
+  completeCodOrder() {
+    return this.orderService.completeCodOrder();
+  }
+
+  @Post('cancel')
+  cancelOrder() {
+    return this.orderService.cancelOrder();
+  }
+
+  @Post('reject')
+  rejectOrder() {
+    return this.orderService.rejectOrder();
   }
 }

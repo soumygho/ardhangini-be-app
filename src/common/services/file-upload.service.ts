@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { S3FileUploadService } from './s3-upload.service';
 import { v4 as uuidv4 } from 'uuid';
 import { ImageType } from '../../product/product-details';
@@ -34,14 +34,17 @@ export class FileUploadService {
   }
 
   async validateFile(file: Express.Multer.File) {
+    if (!file) {
+      throw new HttpException('File is empty', HttpStatus.BAD_REQUEST);
+    }
     const allowedFileextensions: string[] = [
       'image/png',
       'image/jpg',
       'image/jpeg',
     ];
-    if (!file && !file.buffer && !file.originalname && !file.mimetype)
-      throw new Error('file corrupted');
+    if (file && file?.buffer && file?.originalname && file?.mimetype)
+      throw new HttpException('File corrupted', HttpStatus.BAD_REQUEST);
     if (!allowedFileextensions.includes(file.mimetype))
-      throw new Error('file type mismatch');
+      throw new HttpException('File type not allowed.', HttpStatus.BAD_REQUEST);
   }
 }

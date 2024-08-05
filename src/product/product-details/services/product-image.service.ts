@@ -1,5 +1,4 @@
 import { SareeImageEntity } from './../entities/saree/saree-images.entity';
-import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { FileUploadService } from '../../../common/services/file-upload.service';
 import { ImageType } from '../../../common/enum/image-type.enum';
@@ -8,6 +7,7 @@ import { ProductImageUploadDto } from '../dto/product-image-upload.dto';
 import { ProductTypeEntity } from 'src/product/product-type/entities/product-type.entity';
 import { ProductTypes } from 'src/product/product-type/enum/product-type.enum';
 import { SareeEntity } from '../entities';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class ProductImageUploadService {
