@@ -18,7 +18,7 @@ export class DeliveryAddressEntity extends BaseEntity {
   @Column({ type: 'varchar' })
   addressLine2: string;
   @ApiProperty()
-  @Column({ type: 'number' })
+  @Column({ type: 'numeric' })
   pin: number;
   @ApiProperty()
   @Column({ type: 'varchar' })
