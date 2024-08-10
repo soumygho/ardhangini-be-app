@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RegisterUserWithEmailPasswordTransaction } from '../transactions/register-user-with-email-password.transaction';
+import { AccountStatus } from '../enum/user.enum';
 
 @Injectable()
 export class UserService {
@@ -27,11 +28,20 @@ export class UserService {
     return await this.userRepository.findOneBy({ id });
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(updateUserDto: UpdateUserDto) {
+    const userEntity = this.userRepository.create();
+    userEntity.id = updateUserDto.userid;
+    userEntity.dob = updateUserDto.dob;
+    userEntity.firstName = updateUserDto.firstName;
+    userEntity.lastName = updateUserDto.lastName;
+    userEntity.email = updateUserDto.email;
+    userEntity.mobile = updateUserDto.mobile;
+    userEntity.accountStatus = AccountStatus.ACTIVE;
+    userEntity.sex = updateUserDto.sex;
+    return await this.userRepository.save(userEntity);
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    return await this.userRepository.delete({ id: id });
   }
 }

@@ -10,6 +10,10 @@ import { UserProfileImageEntity } from './entities/user-profile-image.entity';
 import { DeliveryAddressEntity } from './entities/delivery-address.entity';
 import { DeliveryAddressController } from './controller/delivery-address.controller';
 import { DeliveryAddressService } from './service/delivery-address.service';
+import { UpdateUserValidationPipe } from './validator/update-user.validator';
+import { AuthService } from './service/auth.service';
+import { UserAuthController } from './controller/user-auth.controller';
+import { AuthGuard } from './guards/UserAuth.guard';
 
 @Module({
   imports: [
@@ -20,12 +24,15 @@ import { DeliveryAddressService } from './service/delivery-address.service';
       DeliveryAddressEntity,
     ]),
   ],
-  controllers: [UserController, DeliveryAddressController],
+  controllers: [UserController, DeliveryAddressController, UserAuthController],
   providers: [
     UserService,
     UserExistsRule,
     RegisterUserWithEmailPasswordTransaction,
     DeliveryAddressService,
+    UpdateUserValidationPipe,
+    AuthService,
+    AuthGuard,
   ],
 })
 export class UserModule {}

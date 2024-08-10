@@ -3,15 +3,19 @@ import { BaseEntity } from '../../common';
 import { AccountStatus } from '../enum/user.enum';
 import { Gender } from '../enum/gender.enum';
 import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 
-@Entity()
+@Entity('user')
 export class UserEntity extends BaseEntity {
   @ApiProperty()
-  @Column({ type: 'varchar' })
-  name: string;
+  @Column({ type: 'varchar', nullable: true })
+  firstName: string;
   @ApiProperty()
-  @Column({ type: 'date' })
-  dob: string;
+  @Column({ type: 'varchar', nullable: true })
+  lastName: string;
+  @ApiProperty()
+  @Column({ type: 'date', nullable: true })
+  dob: Date;
   @ApiProperty()
   @Column({ type: 'varchar', nullable: true })
   email: string;
@@ -38,7 +42,9 @@ export class UserEntity extends BaseEntity {
     default: Gender.MALE,
   })
   sex: Gender;
-  @ApiProperty()
-  @Column({ type: 'boolean', default: false })
-  isAdmin: boolean;
+
+  //it is used to store ardhangini portal refresh token
+  @Column({ type: 'varchar', nullable: true })
+  @Exclude({ toPlainOnly: true })
+  refreshToken: string;
 }

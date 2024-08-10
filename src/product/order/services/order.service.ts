@@ -41,7 +41,7 @@ export class OrderService {
     );
   }
 
-  cancelOrder() {
+  cancelOrder(userId: string, orderId: string) {
     return 'cancel the order';
   }
 
@@ -49,7 +49,7 @@ export class OrderService {
     return 'reject order';
   }
 
-  returnOrder() {
+  returnOrder(userId: string, orderId: string) {
     return 'return order';
   }
 

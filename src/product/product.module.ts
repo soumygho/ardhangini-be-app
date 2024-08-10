@@ -117,10 +117,10 @@ import { WishListService } from './wishlist/service/wish-list.service';
     ProductColorController,
     ProductPrintsController,
     PromoDetailsController,
-    SareeController,
     CartController,
     WishListController,
     PromoDetailsController,
+    SareeController,
   ],
   providers: [
     CategoryService,

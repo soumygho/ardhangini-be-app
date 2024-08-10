@@ -40,9 +40,7 @@ export class InventoryCreateTransaction extends BaseTransaction<
     if (!productTypeEntity) {
       throw new NotFoundException('ProductType not found');
     }
-    if (!userEntity) {
-      throw new NotFoundException('User not found');
-    }
+
     let orderDetails: OrderDetailsEntity;
     if (data.orderId) {
       const orderRepository: Repository<OrderDetailsEntity> =
@@ -54,6 +52,11 @@ export class InventoryCreateTransaction extends BaseTransaction<
         throw new NotFoundException('Order not found.');
       }
     }
+
+    if (orderDetails && !userEntity) {
+      throw new NotFoundException('User not found');
+    }
+
     if (productTypeEntity.name.toLowerCase() === ProductTypes.SAREE) {
       const sareeRepository: Repository<SareeEntity> =
         manager.getRepository(SareeEntity);
@@ -77,6 +80,7 @@ export class InventoryCreateTransaction extends BaseTransaction<
         }
         sareeEntity.available_qty = sareeEntity.available_qty - data.quantity;
       }
+      //for non order transactions need to read admin user from admin user table
       let inventoryTransactionEntity: ProductInventoryEntity =
         inventoryRepository.create();
       inventoryTransactionEntity.opening = openingQuantity;

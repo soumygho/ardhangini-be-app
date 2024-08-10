@@ -76,8 +76,8 @@ export class SareeDetailsMapper extends BaseMapper<
           dto.isWishListed = true;
         }
       }
-      return dto;
     }
+    return dto;
   }
   public mapFrom(source: SareeEntity): ProductSnapshotDto {
     const productSnapshot: ProductSnapshotDto = new ProductSnapshotDto();
@@ -105,6 +105,10 @@ export class SareeDetailsMapper extends BaseMapper<
     productSnapshot.productOccassion = source.occassion;
     productSnapshot.productStyle = source.style;
     productSnapshot.productPrint = source.print;
+    productSnapshot.maxAllowedCancellationDays =
+      source.maxAllowedCancellationDays;
+    productSnapshot.maxAllowedReturnDays = source.maxAllowedReturnDays;
+    productSnapshot.isShippable = source.isShippable;
     return productSnapshot;
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -123,7 +127,9 @@ export class SareeDetailsMapper extends BaseMapper<
     sareeDetailsDto.length = sareeDetails.length;
     sareeDetailsDto.width = sareeDetails.width;
     sareeDetailsDto.washcare = sareeDetails.fabricDetails.washCare;
-    sareeDetailsDto.sareeImages = sareeEntity.productImages;
+    sareeDetailsDto.sareeImages = sareeEntity.productImages?.map(
+      (image) => image?.imageSource,
+    );
     return sareeDetailsDto;
   }
 }

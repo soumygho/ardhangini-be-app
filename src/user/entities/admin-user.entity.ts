@@ -9,6 +9,6 @@ export class AdminUserEntity extends BaseEntity {
   userName: string;
   @Column({ type: 'varchar' })
   password: string;
-  @Column({ type: 'varchar' })
-  role: string;
+  @Column({ type: 'varchar', array: true })
+  role: string[];
 }

@@ -33,7 +33,7 @@ export class RegisterUserWithEmailPasswordTransaction extends BaseTransaction<
       new UserLoginDetailsEntity();
     userLoginDetails.user = user;
     userLoginDetails.logintype = LoginType.EMAIL;
-    userLoginDetails.accessToken = await bcrypt.hash(
+    userLoginDetails.password = await bcrypt.hash(
       data.password,
       this.saltOrRounds,
     );

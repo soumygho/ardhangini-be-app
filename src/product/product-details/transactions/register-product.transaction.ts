@@ -13,6 +13,12 @@ import {
   SareeEntity,
 } from '../entities';
 import { ProductTypes } from 'src/product/product-type/enum/product-type.enum';
+import { PromoDetailsEntity } from 'src/product/promo/entity/promo-details.entity';
+import { ProductCollectionEntity } from 'src/product/collections/entity/product-collection.entity';
+import { ProductStyleEntity } from 'src/product/product-style/entity/product-style.entity';
+import { ProductPrintsEntity } from 'src/product/prints/entity/product-prints.entity';
+import { ProductColorEntity } from 'src/product/colours/entity/product-colour.entity';
+import { ProductOccassionEntity } from 'src/product/product-occasion/entity/product-occassion.entity';
 
 @Injectable()
 export class RegisterOrUpdateProductTransaction extends BaseTransaction<
@@ -43,6 +49,19 @@ export class RegisterOrUpdateProductTransaction extends BaseTransaction<
         await manager.getRepository(SareeEntity);
       const sareeDetailsRepository: Repository<SareeDetailsEntity> =
         await manager.getRepository(SareeDetailsEntity);
+
+      const promoRepository: Repository<PromoDetailsEntity> =
+        await manager.getRepository(PromoDetailsEntity);
+      const collectionRepository: Repository<ProductCollectionEntity> =
+        await manager.getRepository(ProductCollectionEntity);
+      const printRepository: Repository<ProductPrintsEntity> =
+        await manager.getRepository(ProductPrintsEntity);
+      const styleRepository: Repository<ProductStyleEntity> =
+        await manager.getRepository(ProductStyleEntity);
+      const colorRepository: Repository<ProductColorEntity> =
+        await manager.getRepository(ProductColorEntity);
+      const occassionRepository: Repository<ProductOccassionEntity> =
+        await manager.getRepository(ProductOccassionEntity);
 
       const category: CategoryEntity = await categoryRepository.findOneBy({
         id: data.categoryId,
@@ -81,6 +100,63 @@ export class RegisterOrUpdateProductTransaction extends BaseTransaction<
       sareeEntity.subCategory = subCategory;
       sareeEntity.skuid = data.skuid;
       sareeDetailsEntity.fabricDetails = fabricDetails;
+      sareeEntity.maxAllowedCancellationDays = data.maxAllowedCancellationDays;
+      sareeEntity.maxAllowedReturnDays = data.maxAllowedReturnDays;
+
+      sareeEntity.isNew = false;
+      sareeEntity.isShippable = this.resolveBoolean(String(data.isShippable));
+      sareeEntity.isBestSeller = this.resolveBoolean(String(data.isBestSeller));
+      sareeEntity.isTrending = this.resolveBoolean(String(data.isTrending));
+      sareeEntity.isExclusive = this.resolveBoolean(String(data.isExclusive));
+      console.trace(data);
+      console.trace(sareeEntity);
+
+      if (data?.collectionId) {
+        sareeEntity.collection = await collectionRepository.findOneBy({
+          id: data?.collectionId,
+        });
+      } else {
+        sareeEntity.collection = null;
+      }
+      if (data?.colorId) {
+        sareeEntity.colour = await colorRepository.findOneBy({
+          id: data?.colorId,
+        });
+      } else {
+        sareeEntity.colour = null;
+      }
+      if (data?.styleId) {
+        sareeEntity.style = await styleRepository.findOneBy({
+          id: data?.styleId,
+        });
+      } else {
+        sareeEntity.style = null;
+      }
+      if (data?.printId) {
+        sareeEntity.print = await printRepository.findOneBy({
+          id: data?.printId,
+        });
+        console.trace(sareeEntity.print);
+      } else {
+        sareeEntity.print = null;
+      }
+
+      if (data?.promoId) {
+        sareeEntity.promoDetails = await promoRepository.findOneBy({
+          id: data?.promoId,
+        });
+      } else {
+        sareeEntity.promoDetails = null;
+      }
+
+      if (data?.occassionId) {
+        sareeEntity.occassion = await occassionRepository.findOneBy({
+          id: data?.occassionId,
+        });
+      } else {
+        sareeEntity.occassion = null;
+      }
+
       if (
         (await sareeRepository.existsBy({ productName: data.productName })) ||
         (data.productId &&
@@ -106,14 +182,13 @@ export class RegisterOrUpdateProductTransaction extends BaseTransaction<
             await sareeDetailsRepository.findOneBy({
               id: currentSareeEntity.sareeDetails.id,
             });
+          Object.assign(sareeDetailsEntity, data?.productDetails);
+          sareeDetailsEntity.blousePieceIncluded = this.resolveBoolean(
+            String(data?.productDetails?.isBlousePieceIncluded),
+          );
           sareeDetailsEntity.id = currentSareeDetailsEntity.id;
           sareeDetailsEntity.product = currentSareeDetailsEntity.product;
           sareeEntity.productImages = currentSareeEntity.productImages;
-          sareeEntity.isBestSeller = currentSareeEntity.isBestSeller;
-          sareeEntity.isNew = currentSareeEntity.isNew;
-          sareeEntity.isTrending = currentSareeEntity.isTrending;
-          console.trace(JSON.stringify(sareeEntity));
-          console.trace(JSON.stringify(sareeDetailsEntity));
           sareeDetailsEntity =
             await sareeDetailsRepository.save(sareeDetailsEntity);
           sareeEntity.sareeDetails = sareeDetailsEntity;
@@ -148,5 +223,13 @@ export class RegisterOrUpdateProductTransaction extends BaseTransaction<
       console.log(JSON.stringify(response));
       return response;
     }
+  }
+
+  private resolveBoolean(value: string) {
+    if (value) {
+      if (value === 'true') return true;
+      return false;
+    }
+    return false;
   }
 }

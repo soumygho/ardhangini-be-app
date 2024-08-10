@@ -8,10 +8,12 @@ import { UserModule } from './user/user.module';
 import { SiteImageModule } from './site-image/site-image.module';
 import { CommonModule } from './common';
 import { ScheduleModule } from '@nestjs/schedule';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    JwtModule.register({ global: true }),
     TypeOrmModule.forRoot({
       type: process.env.DB_TYPE as 'mysql' | 'postgres',
       host: process.env.DB_HOST,

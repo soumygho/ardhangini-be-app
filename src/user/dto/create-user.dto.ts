@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsDateString,
   IsEmail,
@@ -9,10 +10,9 @@ import {
   UserExistRuleType,
   UserExistsRule,
 } from '../validator/user-exists-rule.validator';
-import { ApiProperty } from '@nestjs/swagger';
 import { Gender } from '../enum/gender.enum';
 
-export class RegisterEmailPasswordDto {
+export class CreateUserDto {
   @ApiProperty({
     required: true,
     example: 'test@test.com',
@@ -21,13 +21,6 @@ export class RegisterEmailPasswordDto {
   @IsNotEmpty()
   @Validate(UserExistsRule, [UserExistRuleType.EMAIL, false], {})
   email: string;
-
-  @ApiProperty({
-    required: true,
-    example: 'password',
-  })
-  @IsNotEmpty()
-  password: string;
 
   @ApiProperty({
     required: true,

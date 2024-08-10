@@ -47,6 +47,8 @@ export class ProductSnapshotDto {
   isNew: boolean;
   @ApiProperty()
   isExclusive: boolean;
+  @ApiProperty()
+  isShippable: boolean;
 
   @ApiProperty({
     type: ProductCollectionEntity,
@@ -72,4 +74,10 @@ export class ProductSnapshotDto {
     type: ProductPrintsEntity,
   })
   productPrint: ProductPrintsEntity;
+
+  @ApiProperty()
+  maxAllowedReturnDays: number;
+
+  @ApiProperty()
+  maxAllowedCancellationDays: number;
 }

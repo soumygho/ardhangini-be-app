@@ -34,19 +34,19 @@ export abstract class ProductEntity extends BaseEntity {
   @Column({ type: 'varchar' })
   productDescription: string;
   @ApiProperty()
-  @Column({ type: 'numeric' })
+  @Column({ type: 'numeric', name: 'average_review', default: 0 })
   averageReview: number;
   @ApiProperty()
-  @Column({ type: 'int' })
+  @Column({ type: 'int', name: 'review_count', default: 0 })
   numberOfReviews: number;
   @ApiProperty()
-  @Column({ type: 'numeric' })
+  @Column({ name: 'offer_price', type: 'numeric', default: 0 })
   offerprice: number;
   @ApiProperty()
   @Column({ type: 'numeric' })
   actualprice: number;
   @ApiProperty()
-  @Column({ type: 'int' })
+  @Column({ name: 'quantity', type: 'numeric', default: 0 })
   available_qty: number;
   @ApiProperty()
   @Column({ type: 'boolean', default: true })
@@ -85,4 +85,15 @@ export abstract class ProductEntity extends BaseEntity {
   @ApiProperty()
   @Column({ name: 'is_exclusive', nullable: true, default: false })
   isExclusive: boolean;
+  @ApiProperty()
+  @Column({ name: 'is_shippable', nullable: true, default: false })
+  isShippable: boolean;
+
+  @ApiProperty()
+  @Column({ name: 'return_allowed_days', default: 3 })
+  maxAllowedReturnDays: number;
+
+  @ApiProperty()
+  @Column({ name: 'cancellation_allowed_days', default: 3 })
+  maxAllowedCancellationDays: number;
 }

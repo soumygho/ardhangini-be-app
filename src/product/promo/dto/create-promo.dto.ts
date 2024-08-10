@@ -1,4 +1,20 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { PromoDetailsEntity } from '../entity/promo-details.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class CreatePromoDto extends PartialType(PromoDetailsEntity) {}
+export class CreatePromoDto {
+  @ApiProperty()
+  startDate: Date;
+  @ApiProperty()
+  endDate: Date;
+  @ApiProperty()
+  description: string;
+  @ApiProperty({ required: false })
+  minimumOrderValue: number;
+  @ApiProperty({
+    required: false,
+  })
+  discountPercentage: number;
+  @ApiProperty({
+    required: false,
+  })
+  flatDiscount: number;
+}

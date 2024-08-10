@@ -28,22 +28,23 @@ export class SareeEntity extends ProductEntity {
   })
   productImages: SareeImageEntity[];
 
+  @ApiProperty({ type: ProductCollectionEntity })
   @ManyToOne(() => ProductCollectionEntity, { nullable: true, eager: true })
   @JoinColumn({ name: 'collection_id' })
   collection: ProductCollectionEntity;
-
+  @ApiProperty({ type: ProductColorEntity })
   @ManyToOne(() => ProductColorEntity, { nullable: true, eager: true })
   @JoinColumn({ name: 'color_id' })
   colour: ProductColorEntity;
-
+  @ApiProperty({ type: ProductPrintsEntity })
   @ManyToOne(() => ProductPrintsEntity, { nullable: true, eager: true })
   @JoinColumn({ name: 'print_id' })
   print: ProductPrintsEntity;
-
+  @ApiProperty({ type: ProductOccassionEntity })
   @ManyToOne(() => ProductOccassionEntity, { nullable: true, eager: true })
   @JoinColumn({ name: 'occassion_id' })
   occassion: ProductOccassionEntity;
-
+  @ApiProperty({ type: ProductStyleEntity })
   @ManyToOne(() => ProductStyleEntity, { nullable: true, eager: true })
   @JoinColumn({ name: 'style_id' })
   style: ProductStyleEntity;

@@ -1,4 +1,17 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { ProductPrintsEntity } from '../entity/product-prints.entity';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsUUID, ValidateIf } from 'class-validator';
 
-export class CreateProductPrintDto extends PartialType(ProductPrintsEntity) {}
+export class CreateProductPrintDto {
+  @ApiProperty({ required: false })
+  @ValidateIf((val) => (val.id ? true : false))
+  @IsUUID()
+  id: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  name: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  description: string;
+}

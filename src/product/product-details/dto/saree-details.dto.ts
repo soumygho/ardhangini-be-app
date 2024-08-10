@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SareeImageEntity } from '../entities/saree/saree-images.entity';
 
 export class SareeDetailsDto {
   @ApiProperty()
@@ -17,5 +16,5 @@ export class SareeDetailsDto {
   @ApiProperty()
   blouse_desc: string;
   @ApiProperty()
-  sareeImages: SareeImageEntity[];
+  sareeImages: string[];
 }

@@ -18,12 +18,13 @@ export enum UserExistRuleType {
 @Injectable()
 export class UserExistsRule implements ValidatorConstraintInterface {
   constructor(
-    @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
   ) {}
-  validate(
+  async validate(
     value: any,
     validationArguments?: ValidationArguments,
-  ): Promise<boolean> | boolean {
+  ): Promise<boolean> {
     console.trace(
       'UserExistsRule: validationArguments : ' +
         JSON.stringify(validationArguments),
@@ -32,13 +33,14 @@ export class UserExistsRule implements ValidatorConstraintInterface {
     let userExistRuleType: UserExistRuleType = UserExistRuleType.ID;
     let existsCheck = true;
     if (
-      validationArguments !== undefined &&
-      validationArguments.constraints !== undefined &&
-      validationArguments.constraints.length === 2
+      validationArguments &&
+      validationArguments.constraints &&
+      validationArguments.constraints.length == 2
     ) {
       userExistRuleType = validationArguments.constraints[0];
       existsCheck = validationArguments.constraints[1];
     }
+
     switch (userExistRuleType) {
       case UserExistRuleType.ID: {
         return this.userExistById(value, existsCheck);

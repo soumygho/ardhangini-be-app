@@ -18,7 +18,7 @@ export class ProductInventoryEntity extends BaseEntity {
   productType: ProductTypeEntity;
   @Column({ type: 'numeric' })
   quantity: number;
-  @ManyToOne(() => UserEntity, { eager: true })
+  @ManyToOne(() => UserEntity, { eager: true, nullable: true })
   @JoinColumn({ name: 'owner_id' })
   owner: UserEntity;
 

@@ -102,4 +102,49 @@ export class CreateProductDto {
   })
   @IsNotEmpty()
   maxQuantityPerCart: number;
+
+  @ApiProperty({ required: false })
+  @ValidateIf((val) => (val.promoId ? true : false))
+  @IsUUID()
+  promoId: string;
+
+  @ApiProperty()
+  isTrending: boolean;
+  @ApiProperty()
+  isBestSeller: boolean;
+  @ApiProperty()
+  isExclusive: boolean;
+  @ApiProperty()
+  isShippable: boolean;
+
+  @ApiProperty({ required: false })
+  @ValidateIf((val) => val?.collectionId)
+  @IsUUID()
+  collectionId: string;
+
+  @ApiProperty({ required: false })
+  @ValidateIf((val) => val?.colorId)
+  @IsUUID()
+  colorId: string;
+
+  @ApiProperty({ required: false })
+  @ValidateIf((val) => val?.occassionId)
+  @IsUUID()
+  occassionId: string;
+
+  @ApiProperty({ required: false })
+  @ValidateIf((val) => val.styleId)
+  @IsUUID()
+  styleId: string;
+
+  @ApiProperty({ required: false })
+  @ValidateIf((val) => val.printId)
+  @IsUUID()
+  printId: string;
+
+  @ApiProperty()
+  maxAllowedReturnDays: number;
+
+  @ApiProperty()
+  maxAllowedCancellationDays: number;
 }

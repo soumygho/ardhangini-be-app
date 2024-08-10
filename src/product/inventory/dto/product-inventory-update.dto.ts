@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsUUID, ValidateIf } from 'class-validator';
 import { TransactionType } from '../enum/transaction-type.enum';
 
 export class ProductInventoryUpdateDto {
@@ -12,9 +12,9 @@ export class ProductInventoryUpdateDto {
   @IsUUID()
   productTypeId: string;
   @ApiProperty()
-  @IsNotEmpty()
+  @ValidateIf((value) => value?.userId)
   @IsUUID()
-  userId: string;
+  userId?: string;
   @ApiProperty({ required: false })
   invoiceRef: string;
   @ApiProperty()

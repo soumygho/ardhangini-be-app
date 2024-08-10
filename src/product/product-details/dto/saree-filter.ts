@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsUUID, ValidateIf } from 'class-validator';
 
 export enum FilterType {
   NONE = 'none',
@@ -14,6 +15,7 @@ export enum FilterType {
   OCCASSION = 'occassion',
   BESTSELLER = 'bestseller',
   TRENDING = 'trending',
+  SHIPPABLE = 'shippable',
 }
 
 export class SareeFilter {
@@ -35,6 +37,8 @@ export class SareeFilterDto {
   @ApiProperty({
     required: false,
   })
+  @ValidateIf((filter) => (filter.userId ? true : false))
+  @IsUUID()
   userId: string;
   @ApiProperty({ type: SareeFilter, isArray: true, required: false })
   filters: SareeFilter[];

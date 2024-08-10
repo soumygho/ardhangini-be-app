@@ -4,9 +4,10 @@ import { LoginType } from '../enum/user.enum';
 import { UserEntity } from './user.entity';
 import { Exclude } from 'class-transformer';
 
-@Entity()
+@Entity('user_login_details')
 export class UserLoginDetailsEntity extends BaseEntity {
   @Column({
+    name: 'login_type',
     type: 'enum',
     enum: LoginType,
     default: LoginType.EMAIL,
@@ -14,13 +15,20 @@ export class UserLoginDetailsEntity extends BaseEntity {
   @Exclude({ toPlainOnly: true })
   logintype: LoginType;
 
-  @ManyToOne(() => UserEntity)
+  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
-  @Column({ type: 'varchar' })
-  @Exclude({ toPlainOnly: true })
-  accessToken: string;
+
   @Column({ type: 'varchar', nullable: true })
   @Exclude({ toPlainOnly: true })
-  refreshToken: string;
+  providerAccessToken: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  @Exclude({ toPlainOnly: true })
+  providerRefreshToken: string;
+
+  //it is used to store ardhangini portal password
+  @Column({ type: 'varchar', nullable: true })
+  @Exclude({ toPlainOnly: true })
+  password: string;
 }

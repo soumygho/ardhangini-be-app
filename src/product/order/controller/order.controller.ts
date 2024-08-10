@@ -38,34 +38,53 @@ export class OrderController extends BaseController {
   }
 
   @ApiOperation({
-    description: 'get all orders for user',
+    description: 'get all orders for user (admin api)',
   })
   @ApiOkResponse({
-    description: 'Order Response',
+    description: 'Order Response for admin',
     type: OrderResponse,
     isArray: true,
   })
-  @Get(':userId')
+  @Get('/admin/:userId')
   findAllByUserId(@Param('userId') userId: string) {
     return this.orderService.findAllByUserId(userId);
   }
 
-  @Post('return')
-  returnOrder() {
-    return this.orderService.returnOrder();
+  @ApiOperation({
+    description: 'get all orders for user (user api)',
+  })
+  @ApiOkResponse({
+    description: 'Order Response for User',
+    type: OrderResponse,
+    isArray: true,
+  })
+  @Get(':userId')
+  findAllByUser(@Param('userId') userId: string) {
+    return this.orderService.findAllByUserId(userId);
   }
 
-  @Post('complete-cod-order')
+  @Post('return/:userId/:orderId')
+  returnOrder(
+    @Param('userId') userId: string,
+    @Param('orderId') orderId: string,
+  ) {
+    return this.orderService.returnOrder(userId, orderId);
+  }
+
+  @Post('admin/complete-cod-order')
   completeCodOrder() {
     return this.orderService.completeCodOrder();
   }
 
-  @Post('cancel')
-  cancelOrder() {
-    return this.orderService.cancelOrder();
+  @Post('cancel/:userId/:orderId')
+  cancelOrder(
+    @Param('userId') userId: string,
+    @Param('orderId') orderId: string,
+  ) {
+    return this.orderService.cancelOrder(userId, orderId);
   }
 
-  @Post('reject')
+  @Post('admin/reject')
   rejectOrder() {
     return this.orderService.rejectOrder();
   }
