@@ -11,6 +11,7 @@ import { WishListEntity } from 'src/product/wishlist/entity/wishlist.entity';
 import { ProductSnapshotWithUserDto } from '../dto/product-snapshot-with-user.dto';
 import { CartLineItemEntity } from 'src/product/cart/entity/cart-line-item.entity';
 import { WishListLineItemEntity } from 'src/product/wishlist/entity/wishlist-item.entity';
+import { CategoryEntity } from 'src/product/category/entities/category.entity';
 
 @Injectable()
 export class SareeDetailsMapper extends BaseMapper<

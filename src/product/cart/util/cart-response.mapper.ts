@@ -29,15 +29,25 @@ export class CartResponseMapper {
             new CartLineItemResponse();
           Object.assign(cartLineItemResponse, lineItemEntity);
           const actualPricePerItem =
-            saree.actualprice + 2 * saree.actualprice * 0.12;
+            Number.parseFloat(saree.actualprice + '') +
+            2 * Number.parseFloat(saree.actualprice + '') * 0.12;
           const finalPricePerItem =
-            saree.offerprice + 2 * saree.offerprice * 0.12;
+            Number.parseFloat(saree.offerprice + '') +
+            2 * Number.parseFloat(saree.offerprice + '') * 0.12;
           const finalTotalPrice =
-            saree.offerprice * lineItemEntity.quantity +
-            2 * saree.offerprice * lineItemEntity.quantity * 0.12;
+            Number.parseFloat(saree.offerprice + '') *
+              Number.parseFloat(lineItemEntity.quantity + '') +
+            2 *
+              Number.parseFloat(saree.offerprice + '') *
+              Number.parseFloat(lineItemEntity.quantity + '') *
+              0.12;
           const actualTotalPrice =
-            saree.actualprice * lineItemEntity.quantity +
-            2 * saree.actualprice * lineItemEntity.quantity * 0.12;
+            Number.parseFloat(saree.actualprice + '') *
+              Number.parseFloat(lineItemEntity.quantity + '') +
+            2 *
+              Number.parseFloat(saree.actualprice + '') *
+              Number.parseFloat(lineItemEntity.quantity + '') *
+              0.12;
           cartLineItemResponse.productId = lineItemEntity.productId;
           cartLineItemResponse.productTypeId = lineItemEntity.productType.id;
           cartLineItemResponse.productName = saree.productName;
@@ -49,9 +59,13 @@ export class CartResponseMapper {
           cartLineItemResponse.actualTotalPrice = actualTotalPrice;
           cartLineItemResponse.finalTotalPrice = finalTotalPrice;
           cartLineItemResponse.totalSgst =
-            saree.offerprice * lineItemEntity.quantity * 0.12;
+            Number.parseFloat(saree.offerprice + '') *
+            Number.parseFloat(lineItemEntity.quantity + '') *
+            0.12;
           cartLineItemResponse.totalCgst =
-            saree.offerprice * lineItemEntity.quantity * 0.12;
+            Number.parseFloat(saree.offerprice + '') *
+            Number.parseFloat(lineItemEntity.quantity + '') *
+            0.12;
           return cartLineItemResponse;
         }
       }),

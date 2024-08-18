@@ -6,9 +6,14 @@ import {
   FindManyOptions,
   FindOptionsWhere,
   In,
+  Not,
   Repository,
 } from 'typeorm';
-import { SareeEntity } from '../entities';
+import {
+  ProductDetailsEntity,
+  SareeDetailsEntity,
+  SareeEntity,
+} from '../entities';
 import { SareeDetailsMapper } from '../mapper/saree-details.mapper';
 import { FilterType, SareeFilter, SareeFilterDto } from '../dto/saree-filter';
 import { CategoryEntity } from 'src/product/category/entities/category.entity';
@@ -21,6 +26,7 @@ import { ProductStyleEntity } from 'src/product/product-style/entity/product-sty
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductSnapshotWithUserDto } from '../dto/product-snapshot-with-user.dto';
 import { PayLoad } from 'src/user/dto/auth.dto';
+import { ProductTypeEntity } from 'src/product/product-type/entities/product-type.entity';
 
 @Injectable()
 export class SareeService {
@@ -94,15 +100,34 @@ export class SareeService {
     if (!sareeEntity) {
       throw new NotFoundException('Saree not found in database.');
     }
-    const relatedSarees = await this.sareeRepository.findBy({
-      subCategory: sareeEntity?.subCategory,
+    const sareeIds = await this.buildSareeSearchOptions([
+      {
+        filterType: FilterType.SUBCATEGORY,
+        values: [sareeEntity.subCategory.id],
+        minValue: '',
+        maxValue: '',
+      },
+    ]);
+    const filteredSareeIds = [];
+    sareeIds?.forEach((id) => {
+      if (id !== sareeEntity.id) {
+        filteredSareeIds.push(id);
+      }
     });
-    const entities = relatedSarees.map(async (sareeEntity) => {
-      return await this.sareeMapper.mapAndEnrichWithUserData(
-        payload?.sub,
-        sareeEntity,
-      );
+    const relatedSarees = await this.sareeRepository.find({
+      where: {
+        id: In(filteredSareeIds),
+      },
+      order: { createdAt: 'DESC' },
     });
+    const entities = await Promise.all(
+      relatedSarees.map(async (sareeEntity) => {
+        return await this.sareeMapper.mapAndEnrichWithUserData(
+          payload?.sub,
+          sareeEntity,
+        );
+      }),
+    );
     return entities;
   }
 
