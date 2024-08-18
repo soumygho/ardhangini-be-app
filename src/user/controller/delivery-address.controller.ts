@@ -26,7 +26,7 @@ export class DeliveryAddressController extends BaseController {
   }
 
   @ApiOperation({
-    description: 'Get all delivery addresses by userid',
+    description: 'Get all delivery addresses by userid for admin api',
   })
   @ApiOkResponse({
     description: 'Delivery Address response',
@@ -35,6 +35,19 @@ export class DeliveryAddressController extends BaseController {
   })
   @Get(':userId')
   async getAllByUserId(@Param('userId') userId: string) {
+    return await this.service.findAllByUserId(userId);
+  }
+
+  @ApiOperation({
+    description: 'Get all delivery addresses by userid for user api',
+  })
+  @ApiOkResponse({
+    description: 'Delivery Address response',
+    type: DeliveryAddressEntity,
+    isArray: true,
+  })
+  @Get('/user/:userId')
+  async getAllByUserIdForUser(@Param('userId') userId: string) {
     return await this.service.findAllByUserId(userId);
   }
 

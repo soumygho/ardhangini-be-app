@@ -11,56 +11,66 @@ import { ProductTypes } from 'src/product/product-type/enum/product-type.enum';
 @Injectable()
 export class CartResponseMapper {
   constructor(private readonly dataSource: DataSource) {}
-  public convertLineItemResponse(
+  public async convertLineItemResponse(
     cartDetails: CartDetailsEntity,
-  ): CartLineItemResponse[] {
-    const lineItems: CartLineItemResponse[] = [];
-    cartDetails.lineItems.forEach(async (lineItemEntity) => {
-      if (
-        lineItemEntity.productType.name.toLowerCase() === ProductTypes.SAREE
-      ) {
-        const sareeRepository: Repository<SareeEntity> =
-          this.dataSource.getRepository(SareeEntity);
-        const saree: SareeEntity = await sareeRepository.findOneBy({
-          id: lineItemEntity.productId,
-        });
-        //construct each cartLineitem response
-        const cartLineItemResponse: CartLineItemResponse =
-          new CartLineItemResponse();
-        Object.assign(cartLineItemResponse, lineItemEntity);
-        cartLineItemResponse.productId = lineItemEntity.productId;
-        cartLineItemResponse.productTypeId = lineItemEntity.productType.id;
-        cartLineItemResponse.productName = saree.productName;
-        cartLineItemResponse.productThumbnail =
-          saree.productImages[0]!.thumbnailSource;
-        cartLineItemResponse.actualPricePerItem =
-          saree.actualprice + 2 * saree.offerprice * 0.12;
-        cartLineItemResponse.finalPricePerItem =
-          saree.offerprice + 2 * saree.offerprice * 0.12;
-        cartLineItemResponse.quantity = lineItemEntity.quantity;
-        cartLineItemResponse.actualTotalPrice =
-          saree.actualprice * lineItemEntity.quantity;
-        cartLineItemResponse.finalTotalPrice =
-          saree.offerprice * lineItemEntity.quantity +
-          2 * saree.offerprice * lineItemEntity.quantity * 0.12;
-        cartLineItemResponse.totalSgst =
-          saree.offerprice * lineItemEntity.quantity * 0.12;
-        cartLineItemResponse.totalCgst =
-          saree.offerprice * lineItemEntity.quantity * 0.12;
-        lineItems.push(cartLineItemResponse);
-      }
-    });
-    return lineItems;
+  ): Promise<CartLineItemResponse[]> {
+    const response = await Promise.all(
+      cartDetails?.lineItems?.map(async (lineItemEntity) => {
+        if (
+          lineItemEntity.productType.name.toLowerCase() === ProductTypes.SAREE
+        ) {
+          const sareeRepository: Repository<SareeEntity> =
+            this.dataSource.getRepository(SareeEntity);
+          const saree: SareeEntity = await sareeRepository.findOneBy({
+            id: lineItemEntity.productId,
+          });
+          //construct each cartLineitem response
+          const cartLineItemResponse: CartLineItemResponse =
+            new CartLineItemResponse();
+          Object.assign(cartLineItemResponse, lineItemEntity);
+          const actualPricePerItem =
+            saree.actualprice + 2 * saree.actualprice * 0.12;
+          const finalPricePerItem =
+            saree.offerprice + 2 * saree.offerprice * 0.12;
+          const finalTotalPrice =
+            saree.offerprice * lineItemEntity.quantity +
+            2 * saree.offerprice * lineItemEntity.quantity * 0.12;
+          const actualTotalPrice =
+            saree.actualprice * lineItemEntity.quantity +
+            2 * saree.actualprice * lineItemEntity.quantity * 0.12;
+          cartLineItemResponse.productId = lineItemEntity.productId;
+          cartLineItemResponse.productTypeId = lineItemEntity.productType.id;
+          cartLineItemResponse.productName = saree.productName;
+          cartLineItemResponse.productThumbnail =
+            saree?.productImages[0]?.imageSource;
+          cartLineItemResponse.actualPricePerItem = actualPricePerItem;
+          cartLineItemResponse.finalPricePerItem = finalPricePerItem;
+          cartLineItemResponse.quantity = lineItemEntity.quantity;
+          cartLineItemResponse.actualTotalPrice = actualTotalPrice;
+          cartLineItemResponse.finalTotalPrice = finalTotalPrice;
+          cartLineItemResponse.totalSgst =
+            saree.offerprice * lineItemEntity.quantity * 0.12;
+          cartLineItemResponse.totalCgst =
+            saree.offerprice * lineItemEntity.quantity * 0.12;
+          return cartLineItemResponse;
+        }
+      }),
+    );
+    return response;
   }
 
   public async convertCartResponse(
     cartDetailsEntity: CartDetailsEntity,
   ): Promise<CartDetailsResponse> {
     const cartDetailsResponse: CartDetailsResponse = new CartDetailsResponse();
+    const cartEntity = await this.dataSource
+      .getRepository(CartDetailsEntity)
+      .findOneBy({ id: cartDetailsEntity.id });
+    console.trace(cartEntity);
     cartDetailsResponse.cartId = cartDetailsEntity.id;
-    cartDetailsResponse.userId = cartDetailsEntity.userDetails.id;
+    cartDetailsResponse.userId = cartEntity.userDetails.id;
     cartDetailsResponse.cartLineItems =
-      this.convertLineItemResponse(cartDetailsEntity);
+      await this.convertLineItemResponse(cartEntity);
     let totalFinalPrice = 0;
     let totalActualPrice = 0;
     let totalSgst = 0;

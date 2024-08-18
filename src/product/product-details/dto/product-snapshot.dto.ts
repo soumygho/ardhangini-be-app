@@ -13,6 +13,8 @@ export class ProductSnapshotDto {
   @ApiProperty()
   producttype: string;
   @ApiProperty()
+  productTypeId: string;
+  @ApiProperty()
   category: string;
   @ApiProperty()
   subcategory: string;
@@ -49,6 +51,8 @@ export class ProductSnapshotDto {
   isExclusive: boolean;
   @ApiProperty()
   isShippable: boolean;
+  @ApiProperty()
+  noOfReviews: number;
 
   @ApiProperty({
     type: ProductCollectionEntity,

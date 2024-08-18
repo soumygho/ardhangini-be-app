@@ -36,7 +36,10 @@ export class DeliveryAddressService {
           );
         }
       }
+
       addressEntity.userDetails = userEntity;
+      console.trace(addressEntity);
+      return await this.deliveryAddressRepository.save(addressEntity);
     } else {
       throw new BadRequestException('User not found.');
     }
@@ -44,8 +47,10 @@ export class DeliveryAddressService {
 
   async findAllByUserId(userId: string) {
     if (await this.userRepository.existsBy({ id: userId })) {
-      const userEntity = await this.userRepository.findOneBy({ id: userId });
-      return this.deliveryAddressRepository.findBy({ userDetails: userEntity });
+      return this.deliveryAddressRepository
+        .createQueryBuilder()
+        .andWhere('user_id = :userId', { userId: userId })
+        .getMany();
     } else {
       throw new BadRequestException('User not found.');
     }

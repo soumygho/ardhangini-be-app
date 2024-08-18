@@ -5,8 +5,6 @@ import { PaymentMethod } from 'src/product/payment/enum/payment-method.enum';
 export class CreateOrderDto {
   @ApiProperty()
   userId: string;
-  @ApiProperty()
-  cartId: string;
   @ApiProperty({
     enum: OrderType,
     required: true,

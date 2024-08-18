@@ -18,26 +18,41 @@ export class OrderService {
   ) {}
 
   async create(createOrderDto: CreateOrderDto) {
-    return await this.createOrderTransaction.run(createOrderDto);
+    const orderEntity = await this.createOrderTransaction.run(createOrderDto);
+    return await this.orderDetailsMapper.convertToOrderResponse(orderEntity);
   }
 
   async findAll() {
-    return (await this.orderRepository.find())?.map((orderDetails) => {
-      return this.orderDetailsMapper.convertToOrderResponse(orderDetails);
-    });
+    return await Promise.all(
+      (await this.orderRepository.find())?.map(async (orderDetails) => {
+        return await this.orderDetailsMapper.convertToOrderResponse(
+          orderDetails,
+        );
+      }),
+    );
   }
 
   async findAllByUserId(userId: string) {
     const userEntity = await this.dataSource
       .getRepository(UserEntity)
-      .findOneBy({ id: userId });
+      .createQueryBuilder()
+      .andWhere('id = :userId', { userId: userId })
+      .getOne();
+
     if (!userEntity) {
       throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
     }
-    return (await this.orderRepository.findBy({ user: userEntity }))?.map(
-      (orderDetails) => {
-        return this.orderDetailsMapper.convertToOrderResponse(orderDetails);
-      },
+    return Promise.all(
+      (
+        await this.orderRepository
+          .createQueryBuilder()
+          .andWhere('user_id = :userId', { userId: userId })
+          .getMany()
+      )?.map(async (orderDetails) => {
+        return await this.orderDetailsMapper.convertToOrderResponse(
+          orderDetails,
+        );
+      }),
     );
   }
 

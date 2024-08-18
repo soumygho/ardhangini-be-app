@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from '../service/user.service';
 import { UpdateUserDto } from '../dto/update-user.dto';
@@ -14,6 +16,9 @@ import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BaseController } from 'src/common';
 import { UserEntity } from '../entities/user.entity';
 import { UpdateUserValidationPipe } from '../validator/update-user.validator';
+import { Request } from 'express';
+import { PayLoad } from '../dto/auth.dto';
+import { AuthGuard } from '../guards/UserAuth.guard';
 
 @ApiTags('User')
 @Controller('user')
@@ -38,12 +43,12 @@ export class UserController extends BaseController {
     type: UserEntity,
     isArray: true,
   })
-  @Get()
+  @Get('/admin/get-all')
   findAllUsersForAdmin() {
     return this.userService.findAll();
   }
 
-  @Get(':id')
+  @Get('/user-details/:id')
   @ApiOperation({
     description: 'Return the user details for user portal',
   })
@@ -54,6 +59,24 @@ export class UserController extends BaseController {
   })
   findOne(@Param('id') id: string) {
     return this.userService.findOne(id);
+  }
+
+  @ApiOperation({
+    description: 'Return the user details for user portal using supplied token',
+  })
+  @ApiOkResponse({
+    description: 'User Details Response',
+    type: UserEntity,
+    isArray: false,
+  })
+  @Get('')
+  @UseGuards(AuthGuard)
+  getUserDetailsByToken(@Req() request: Request) {
+    const userDetails: PayLoad = request['user'] as PayLoad;
+    console.trace('user details : ');
+    console.trace(userDetails);
+    if (userDetails && userDetails.sub)
+      return this.userService.findOne(userDetails?.sub);
   }
 
   @Patch('')

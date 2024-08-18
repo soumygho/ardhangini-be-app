@@ -1,6 +1,8 @@
 import { OrderType, OrderStatus } from '../enum/order.enum';
 import { OrderCancellationReasonType } from '../enum/order-cancellation-type.enum';
 import { ApiProperty } from '@nestjs/swagger';
+import { PaymentEntity } from 'src/product/payment/entity/payment.entity';
+import { OrderTimeLineEntity } from '../entities/order-timeline.entity';
 
 export class OrderLineItemResponse {
   @ApiProperty()
@@ -34,6 +36,8 @@ export class OrderResponse {
   @ApiProperty()
   cartId: string;
   @ApiProperty()
+  orderId: string;
+  @ApiProperty()
   userName: string;
   @ApiProperty()
   userEmail: string;
@@ -60,4 +64,12 @@ export class OrderResponse {
     isArray: true,
   })
   cartLineItems: OrderLineItemResponse[];
+  @ApiProperty()
+  billingAddress: string;
+  @ApiProperty()
+  shippingAddress: string;
+  @ApiProperty({ type: PaymentEntity })
+  paymentInfo: PaymentEntity;
+  @ApiProperty({ type: OrderTimeLineEntity, isArray: true })
+  orderTimeLine: OrderTimeLineEntity[];
 }

@@ -9,14 +9,14 @@ import {
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BaseController } from 'src/common';
 import { AuthService } from '../service/auth.service';
-import { EmailAuthDto } from '../dto/email-auth.dto';
-import { Public, RefreshToken } from '../decorators/auth.decorators';
+import { Admin, Public, RefreshToken } from '../decorators/auth.decorators';
 import { AuthGuard } from '../guards/UserAuth.guard';
+import { AdminAuthDto } from '../dto/admin/admin-auth.dto';
 import { TokenResponse } from '../dto/auth.dto';
 
-@ApiTags('user-auth')
-@Controller('user-auth')
-export class UserAuthController extends BaseController {
+@ApiTags('admin-auth')
+@Controller('admin-auth')
+export class AdminAuthController extends BaseController {
   constructor(private readonly authService: AuthService) {
     super();
   }
@@ -31,8 +31,8 @@ export class UserAuthController extends BaseController {
   })
   @Post('sign-in')
   @Public()
-  signinUsingEmailAndPassword(@Body() dto: EmailAuthDto) {
-    return this.authService.signInUsingEmailForUserPortal(dto);
+  signinUsingEmailAndPassword(@Body() dto: AdminAuthDto) {
+    return this.authService.signInUsingEmailForAdminPortal(dto);
   }
 
   @ApiOperation({
@@ -41,21 +41,23 @@ export class UserAuthController extends BaseController {
   @ApiOkResponse({
     description: 'Token response',
     type: TokenResponse,
-    isArray: false,
+    isArray: true,
   })
   @Get('refresh-token')
   @RefreshToken()
+  @Admin()
   @UseGuards(AuthGuard)
   refreshToken(@Request() req) {
-    return this.authService.refreshTokenForUserPortal(req);
+    return this.authService.refreshTokenForAdminPortal(req);
   }
 
   @Get('log-out')
   @ApiOperation({
     description: 'logout user',
   })
+  @Admin()
   @UseGuards(AuthGuard)
   logoutUser(@Request() req) {
-    return this.authService.logoutForUserPortal(req);
+    return this.authService.logoutForAdminPortal(req);
   }
 }

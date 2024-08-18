@@ -10,4 +10,6 @@ export enum OrderEvent {
   PAYMENTPROCESSED = 'payment processed',
   ORDERREJECTED = 'order rejected',
   ORERCANCELLED = 'order cancelled',
+  PAYMENTPENDING = 'payment pending',
+  ORDERPENDING = 'pending',
 }

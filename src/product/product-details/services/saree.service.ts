@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Request } from 'express';
 import {
   Between,
@@ -20,6 +20,7 @@ import { ProductPrintsEntity } from 'src/product/prints/entity/product-prints.en
 import { ProductStyleEntity } from 'src/product/product-style/entity/product-style.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductSnapshotWithUserDto } from '../dto/product-snapshot-with-user.dto';
+import { PayLoad } from 'src/user/dto/auth.dto';
 
 @Injectable()
 export class SareeService {
@@ -41,11 +42,25 @@ export class SareeService {
       console.log('sareeIds');
       console.log(sareeIds);
       if (sareeIds && sareeIds?.length > 0) {
-        entities = await this.sareeRepository.find({
-          where: {
-            id: In(sareeIds),
-          },
-        });
+        if (this.isNewFilterApplied(dto)) {
+          //for new Arrivals
+          entities = await this.sareeRepository.find({
+            skip: 0,
+            take: 20,
+            where: {
+              id: In(sareeIds),
+            },
+            order: { createdAt: 'DESC' },
+          });
+        } else {
+          entities = await this.sareeRepository.find({
+            where: {
+              id: In(sareeIds),
+            },
+            order: { createdAt: 'DESC' },
+          });
+        }
+
         console.trace('entities : ');
         console.trace(entities);
         entities = entities.map(
@@ -66,6 +81,39 @@ export class SareeService {
       });
     }
     return await Promise.all(entities);
+  }
+
+  public async getRelatedSarees(request: Request, productId: string) {
+    let payload = undefined;
+    if (request.params['user']) {
+      //authenticated user
+      payload = request.params['user'] as unknown as PayLoad;
+    }
+
+    const sareeEntity = await this.sareeRepository.findOneBy({ id: productId });
+    if (!sareeEntity) {
+      throw new NotFoundException('Saree not found in database.');
+    }
+    const relatedSarees = await this.sareeRepository.findBy({
+      subCategory: sareeEntity?.subCategory,
+    });
+    const entities = relatedSarees.map(async (sareeEntity) => {
+      return await this.sareeMapper.mapAndEnrichWithUserData(
+        payload?.sub,
+        sareeEntity,
+      );
+    });
+    return entities;
+  }
+
+  private isNewFilterApplied(dto: SareeFilterDto) {
+    let isNew = false;
+    dto?.filters?.forEach((filter) => {
+      if (filter.filterType === FilterType.NEW) {
+        isNew = true;
+      }
+    });
+    return isNew;
   }
 
   private async buildSareeSearchOptions(filters: SareeFilter[]) {

@@ -94,6 +94,7 @@ export class SareeDetailsMapper extends BaseMapper<
     productSnapshot.productdescription = source.productDescription;
     productSnapshot.productname = source.productName;
     productSnapshot.producttype = source.productType.name;
+    productSnapshot.productTypeId = source.productType.id;
     productSnapshot.return_exchange_policy = source.returnExchangePolicy;
     productSnapshot.skuid = source.skuid;
     productSnapshot.subcategory = source.subCategory.name;
@@ -109,6 +110,8 @@ export class SareeDetailsMapper extends BaseMapper<
       source.maxAllowedCancellationDays;
     productSnapshot.maxAllowedReturnDays = source.maxAllowedReturnDays;
     productSnapshot.isShippable = source.isShippable;
+    //need to integrate with review repo to count per product
+    productSnapshot.noOfReviews = 0;
     return productSnapshot;
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

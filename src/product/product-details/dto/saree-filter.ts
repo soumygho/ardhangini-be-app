@@ -16,6 +16,7 @@ export enum FilterType {
   BESTSELLER = 'bestseller',
   TRENDING = 'trending',
   SHIPPABLE = 'shippable',
+  NEW = 'new',
 }
 
 export class SareeFilter {

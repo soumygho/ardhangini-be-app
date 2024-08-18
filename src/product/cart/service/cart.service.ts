@@ -6,6 +6,7 @@ import { UserEntity } from 'src/user/entities/user.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CartDetailsEntity } from '../entity/cart-details.entity';
 import { CartLineItemEntity } from '../entity/cart-line-item.entity';
+import { ProductTypeEntity } from 'src/product/product-type/entities/product-type.entity';
 
 @Injectable()
 export class CartService {
@@ -16,8 +17,10 @@ export class CartService {
   ) {}
 
   async addOrEditItemInCart(dto: CartUpdateDto) {
-    dto = await this.constructCartUpdateDtoForAdd(dto, true);
-    return this.transaction.run(dto);
+    dto = await this.constructCartUpdateDtoForAdd(dto);
+    const cartDetailsEntity = await this.transaction.run(dto);
+    //return cartDetailsEntity;
+    return await this.mapper.convertCartResponse(cartDetailsEntity);
   }
 
   private async getCart(userId: string) {
@@ -29,10 +32,11 @@ export class CartService {
     if (!user) {
       throw new NotFoundException('User not found.');
     }
-    let cart: CartDetailsEntity = await cartRepository.findOneBy({
-      userDetails: user,
-      isOrdered: false,
-    });
+    let cart: CartDetailsEntity = await cartRepository
+      .createQueryBuilder()
+      .andWhere('user_id = :userId', { userId: user.id })
+      .andWhere('is_ordered = :ordered', { ordered: false })
+      .getOne();
 
     if (!cart) {
       cart = cartRepository.create();
@@ -51,19 +55,23 @@ export class CartService {
     const cart: CartDetailsEntity = await this.getCart(dto?.userId);
     const cartLineRepository: Repository<CartLineItemEntity> =
       this.dataSource.getRepository(CartLineItemEntity);
-    dto?.lineItems?.forEach(async (lineItem) => {
-      if (
-        await cartLineRepository.existsBy({
-          cartDetails: cart,
-          productId: lineItem?.productId,
-        })
-      ) {
-        await cartLineRepository.delete({
-          cartDetails: cart,
-          productId: lineItem?.productId,
-        });
-      }
-    });
+    return await Promise.all(
+      dto?.lineItems?.map(async (lineItem) => {
+        const existingCartLineItem = await cartLineRepository
+          .createQueryBuilder()
+          .andWhere('cart_details_id = :cartId', { cartId: cart.id })
+          .andWhere('product_id = :productId', {
+            productId: lineItem.productId,
+          })
+          .getOne();
+        if (existingCartLineItem) {
+          return await cartLineRepository.delete({
+            cartDetails: cart,
+            productId: lineItem?.productId,
+          });
+        }
+      }),
+    );
   }
 
   async deleteCart(cartId: string, userId: string) {
@@ -73,11 +81,12 @@ export class CartService {
       this.dataSource.getRepository(UserEntity);
     this.dataSource.getRepository(CartDetailsEntity);
     const user: UserEntity = await userRepository.findOneBy({ id: userId });
-    const cartDetails: CartDetailsEntity = await cartRepository.findOneBy({
-      userDetails: user,
-      id: cartId,
-      isOrdered: false,
-    });
+    const cartDetails: CartDetailsEntity = await cartRepository
+      .createQueryBuilder()
+      .andWhere('id = :cartId', { cartId: cartId })
+      .andWhere('user_id = :userId', { userId: user.id })
+      .andWhere('is_ordered = :ordered', { ordered: false })
+      .getOne();
     if (!cartDetails) {
       throw new NotFoundException('cart not found.');
     }
@@ -92,45 +101,47 @@ export class CartService {
     return false;
   }
 
-  private async constructCartUpdateDtoForAdd(
-    dto: CartUpdateDto,
-    isAddOrUpdate: boolean,
-  ) {
+  private async constructCartUpdateDtoForAdd(dto: CartUpdateDto) {
     const userDetails: UserEntity = await this.dataSource
       .getRepository(UserEntity)
       .findOneBy({ id: dto.userId });
     if (!userDetails) {
       throw new NotFoundException('User not found.');
     }
-    const cartDetailsEntity: CartDetailsEntity = await this.dataSource
-      .getRepository(CartDetailsEntity)
-      .findOneBy({ userDetails: userDetails, isOrdered: false });
+    const cartDetailsEntity: CartDetailsEntity = await this.getCart(
+      userDetails.id,
+    );
     if (cartDetailsEntity) {
-      if (isAddOrUpdate) {
-        const lineEntities: CartLineItemEntity[] = await this.dataSource
-          .getRepository(CartLineItemEntity)
-          .findBy({ cartDetails: cartDetailsEntity });
-        const lineItemMap = new Map<string, CartLineItemDto>();
-        dto?.lineItems?.forEach((lineItemDto) =>
-          lineItemMap.set(lineItemDto.productId, lineItemDto),
-        );
-        const finalLineItems: CartLineItemDto[] = [];
+      const lineEntities: CartLineItemEntity[] = await this.dataSource
+        .getRepository(CartLineItemEntity)
+        .createQueryBuilder('lineitem')
+        .leftJoinAndSelect('lineitem.productType', 'producttype')
+        .andWhere('cart_details_id = :cartId', {
+          cartId: cartDetailsEntity.id,
+        })
+        .getMany();
+      console.trace(lineEntities);
+      const lineItemMap = new Map<string, CartLineItemDto>();
+      dto?.lineItems?.forEach((lineItemDto) =>
+        lineItemMap.set(lineItemDto.productId, lineItemDto),
+      );
+      const finalLineItems: CartLineItemDto[] = [];
 
-        lineEntities.forEach((lineItemEntity) => {
-          if (!lineItemMap.has(lineItemEntity.productId)) {
-            const dto: CartLineItemDto = new CartLineItemDto();
-            dto.productId = lineItemEntity.productId;
-            dto.quantity = lineItemEntity.quantity;
-            dto.typeId = lineItemEntity.productType.id;
-            lineItemMap.set(dto.productId, dto);
-          }
-        });
-        Array.from(lineItemMap.values()).forEach((value) => {
-          finalLineItems.push(value);
-        });
-        dto.lineItems = finalLineItems;
-      }
+      lineEntities.forEach((lineItemEntity) => {
+        if (!lineItemMap.has(lineItemEntity.productId)) {
+          const dto: CartLineItemDto = new CartLineItemDto();
+          dto.productId = lineItemEntity.productId;
+          dto.quantity = lineItemEntity.quantity;
+          dto.typeId = lineItemEntity.productType.id;
+          lineItemMap.set(dto.productId, dto);
+        }
+      });
+      Array.from(lineItemMap.values()).forEach((value) => {
+        finalLineItems.push(value);
+      });
+      dto.lineItems = finalLineItems;
     }
+    console.trace(dto);
     return dto;
   }
 }

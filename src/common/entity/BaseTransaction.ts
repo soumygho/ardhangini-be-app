@@ -1,5 +1,5 @@
 import { DataSource, EntityManager, QueryRunner } from 'typeorm';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 @Injectable()
 export abstract class BaseTransaction<TransactionInput, TransactionOutput> {
@@ -29,8 +29,9 @@ export abstract class BaseTransaction<TransactionInput, TransactionOutput> {
       await queryRunner.commitTransaction();
       return result;
     } catch (error) {
+      console.error(error);
       await queryRunner.rollbackTransaction();
-      throw new Error('Transaction failed');
+      throw new BadRequestException(error);
     } finally {
       await queryRunner.release();
     }

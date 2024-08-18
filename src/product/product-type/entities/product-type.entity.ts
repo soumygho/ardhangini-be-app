@@ -3,7 +3,7 @@ import { ProductTypes } from '../enum/product-type.enum';
 import { BaseEntity } from 'src/common';
 import { ApiProperty } from '@nestjs/swagger';
 
-@Entity()
+@Entity('product_type_entity')
 export class ProductTypeEntity extends BaseEntity {
   @ApiProperty({
     enum: ProductTypes,

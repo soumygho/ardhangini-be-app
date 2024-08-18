@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BaseController } from 'src/common';
 import { SareeService } from '../services/saree.service';
@@ -23,5 +23,18 @@ export class SareeController extends BaseController {
   @Post('saree')
   async getAll(@Req() request, @Body() dto: SareeFilterDto) {
     return await this.sareeService.getAll(request, dto);
+  }
+
+  @ApiOperation({
+    description: 'Related Sarees',
+  })
+  @ApiOkResponse({
+    description: 'All Sarees Filter Response',
+    type: ProductSnapshotWithUserDto,
+    isArray: true,
+  })
+  @Get('realted-sarees/:sareeId')
+  async getRelatedSarees(@Req() request, @Param('sareeId') sareeId: string) {
+    return await this.sareeService.getRelatedSarees(request, sareeId);
   }
 }

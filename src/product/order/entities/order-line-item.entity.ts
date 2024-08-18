@@ -8,7 +8,7 @@ export class OrderLineItemEntity extends BaseEntity {
   @ManyToOne(() => OrderDetailsEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'order_id' })
   orderDetails: OrderDetailsEntity;
-  @OneToOne(() => CartLineItemEntity)
+  @OneToOne(() => CartLineItemEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'cart_line_item_id' })
   cartLineItem: CartLineItemEntity;
   @Column({ type: 'numeric' })

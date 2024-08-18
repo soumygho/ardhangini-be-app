@@ -8,17 +8,9 @@ import * as bcrypt from 'bcrypt';
 import { UserLoginDetailsEntity } from '../entities/user-login.entity';
 import { LoginType } from '../enum/user.enum';
 import { Request } from 'express';
-
-export type PayLoad = {
-  sub: string;
-  isAdmin: boolean;
-  roles?: string[];
-};
-
-export class TokenResponse {
-  accessToken: string;
-  refreshToken: string;
-}
+import { AdminUserEntity } from '../entities/admin-user.entity';
+import { AdminAuthDto } from '../dto/admin/admin-auth.dto';
+import { PayLoad, TokenResponse } from '../dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -99,6 +91,66 @@ export class AuthService {
     }
     userEntity.refreshToken = '';
     await this.dataSource.getRepository(UserEntity).save(userEntity);
+  }
+
+  //admin portal authentication service
+  async signInUsingEmailForAdminPortal(dto: AdminAuthDto) {
+    const userEntity = await this.dataSource
+      .getRepository(AdminUserEntity)
+      .findOneBy({ userName: dto?.userName });
+
+    if (!userEntity) {
+      throw new BadRequestException('Admin User not found with the email');
+    }
+    const isMatch = await bcrypt.compare(dto?.password, userEntity.password);
+    if (isMatch) {
+      const tokenResponse = await this.generateTokens(userEntity.id, true, [
+        'admin',
+      ]);
+      userEntity.refreshToken = await bcrypt.hash(
+        tokenResponse.refreshToken,
+        this.saltOrRounds,
+      );
+      //save the refresh token to designate user is logged in
+      await this.dataSource.getRepository(AdminUserEntity).save(userEntity);
+      return tokenResponse;
+    } else {
+      throw new BadRequestException('Login details is incorrect.');
+    }
+  }
+
+  //admin portal authentication service
+  async refreshTokenForAdminPortal(request: Request) {
+    const payload = request['user'] as PayLoad;
+    console.trace(payload);
+    const userEntity = await this.dataSource
+      .getRepository(AdminUserEntity)
+      .findOneBy({ id: payload?.sub });
+    if (!userEntity) {
+      throw new BadRequestException('Admin user not found.');
+    }
+    if (!userEntity?.refreshToken) {
+      throw new BadRequestException('user already logged out.');
+    }
+
+    const response = await this.generateTokens(userEntity?.id, true, ['admin']);
+    userEntity.refreshToken = response?.refreshToken;
+    await this.dataSource.getRepository(AdminUserEntity).save(userEntity);
+    return response;
+  }
+
+  //admin portal authentication service
+  async logoutForAdminPortal(request: Request) {
+    const payload = request['user'] as PayLoad;
+    console.trace(payload);
+    const userEntity = await this.dataSource
+      .getRepository(AdminUserEntity)
+      .findOneBy({ id: payload?.sub });
+    if (!userEntity) {
+      throw new BadRequestException('user not found.');
+    }
+    userEntity.refreshToken = '';
+    await this.dataSource.getRepository(AdminUserEntity).save(userEntity);
   }
 
   public async generateTokens(

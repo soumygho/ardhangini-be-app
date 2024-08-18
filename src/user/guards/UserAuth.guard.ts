@@ -13,7 +13,7 @@ import {
   IS_REFRESH_TOKEN,
 } from '../constants/auth.contant';
 import { ConfigService } from '@nestjs/config';
-import { PayLoad } from '../service/auth.service';
+import { PayLoad } from '../dto/auth.dto';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -23,6 +23,7 @@ export class AuthGuard implements CanActivate {
     private configService: ConfigService,
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    console.trace(context);
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -42,6 +43,7 @@ export class AuthGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
+    console.trace(token);
     if (!token) {
       throw new UnauthorizedException();
     }

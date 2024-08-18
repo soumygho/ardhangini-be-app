@@ -7,13 +7,15 @@ import { BaseEntity } from 'src/common';
 @Entity('cart_line_item')
 export class CartLineItemEntity extends BaseEntity {
   @Exclude({ toPlainOnly: true })
+  @Column({ name: 'product_id' })
   productId: string;
   @Exclude({ toPlainOnly: true })
-  @ManyToOne(() => ProductTypeEntity)
+  @ManyToOne(() => ProductTypeEntity, { eager: true })
+  @JoinColumn({ name: 'product_type_id' })
   productType: ProductTypeEntity;
   @ManyToOne(() => CartDetailsEntity, (cartEntity) => cartEntity.lineItems)
   @JoinColumn({ name: 'cart_details_id' })
   cartDetails: CartDetailsEntity;
-  @Column({ type: 'int' })
+  @Column({ name: 'quantity', type: 'numeric' })
   quantity: number;
 }

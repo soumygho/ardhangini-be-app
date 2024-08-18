@@ -13,6 +13,7 @@ import { PaymentEntity } from 'src/product/payment/entity/payment.entity';
 import { OrderCancellationReasonType } from '../enum/order-cancellation-type.enum';
 import { CartDetailsEntity } from 'src/product/cart/entity/cart-details.entity';
 import { OrderLineItemEntity } from './order-line-item.entity';
+import { OrderEvent } from '../enum/order-event.enum';
 
 @Entity('order_details')
 export class OrderDetailsEntity extends BaseEntity {
@@ -20,17 +21,23 @@ export class OrderDetailsEntity extends BaseEntity {
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
 
-  @OneToOne(() => PaymentEntity, { nullable: true, eager: true })
+  @OneToOne(() => PaymentEntity, (payment) => payment.id, {
+    nullable: true,
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'payment_id' })
   paymentDetails: PaymentEntity;
 
   @OneToMany(() => OrderLineItemEntity, (lineItem) => lineItem.orderDetails, {
     eager: true,
     nullable: true,
+    onDelete: 'CASCADE',
   })
   lineItems: OrderLineItemEntity[];
 
-  @OneToOne(() => CartDetailsEntity, { eager: true })
+  @OneToOne(() => CartDetailsEntity, { eager: true, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'cart_id' })
   cartDetails: CartDetailsEntity;
 
   @Column({
@@ -49,13 +56,14 @@ export class OrderDetailsEntity extends BaseEntity {
 
   @Column({
     type: 'enum',
-    enum: OrderStatus,
-    default: OrderStatus.PENDING,
+    enum: OrderEvent,
+    default: OrderEvent.ORDERCREATED,
   })
-  orderstatus: OrderStatus;
+  orderstatus: OrderEvent;
 
   @Column({
     type: 'varchar',
+    nullable: true,
   })
   cancellation_reason: string;
 
@@ -71,8 +79,12 @@ export class OrderDetailsEntity extends BaseEntity {
   totalPrice: number;
 
   @Column({ type: 'numeric' })
-  totalIgst: number;
+  totalSgst: number;
 
   @Column({ type: 'numeric' })
   totalCgst: number;
+  @Column({ type: 'varchar', nullable: true })
+  billingAddress: string;
+  @Column({ type: 'varchar', nullable: true })
+  shippingAddress: string;
 }

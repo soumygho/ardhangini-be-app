@@ -27,6 +27,6 @@ export class WishListDetailsResponse {
   wishListId: string;
   @ApiProperty()
   userId: string;
-  @ApiProperty()
+  @ApiProperty({ type: WishListLineItemDto, isArray: true })
   lineItems: WishListLineItemResponse[];
 }

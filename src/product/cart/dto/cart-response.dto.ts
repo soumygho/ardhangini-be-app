@@ -31,7 +31,7 @@ export class CartDetailsResponse {
   cartId: string;
   @ApiProperty()
   userId: string;
-  @ApiProperty()
+  @ApiProperty({ type: CartLineItemResponse, isArray: true })
   cartLineItems: CartLineItemResponse[];
   @ApiProperty()
   actualTotalPrice: number;

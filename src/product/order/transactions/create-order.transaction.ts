@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 //validate cart
 //copy delivery address
 //check promo
@@ -22,11 +23,13 @@ import { PaymentStatus } from 'src/product/payment/enum/payment-status.enum';
 import { OrderTimeLineEntity } from '../entities/order-timeline.entity';
 import { OrderEvent } from '../enum/order-event.enum';
 import { OrderDetailsMapper } from '../mapper/order-details.mapper';
+import { CartLineItemEntity } from 'src/product/cart/entity/cart-line-item.entity';
+import { makeid } from '../util/order-number.util';
 
 //save order to repo
 export class CreateOrderTransaction extends BaseTransaction<
   CreateOrderDto,
-  OrderResponse
+  OrderDetailsEntity
 > {
   constructor(
     private readonly dataSource: DataSource,
@@ -37,7 +40,7 @@ export class CreateOrderTransaction extends BaseTransaction<
   protected async execute(
     data: CreateOrderDto,
     manager: EntityManager,
-  ): Promise<OrderResponse> {
+  ): Promise<OrderDetailsEntity> {
     const userRepository: Repository<UserEntity> =
       manager.getRepository(UserEntity);
     const cartRepository: Repository<CartDetailsEntity> =
@@ -56,114 +59,148 @@ export class CreateOrderTransaction extends BaseTransaction<
       manager.getRepository(OrderTimeLineEntity);
 
     if (!(await userRepository.existsBy({ id: data.userId }))) {
-      throw new NotFoundException('user not found');
-    }
-    if (
-      !(await cartRepository.existsBy({ id: data.cartId, isOrdered: false }))
-    ) {
-      throw new NotFoundException('Cart not found.');
+      throw new BadRequestException('user not found');
     }
     const userEntity: UserEntity = await userRepository.findOneBy({
       id: data.userId,
     });
-    const cartDetails: CartDetailsEntity = await cartRepository.findOneBy({
-      id: data.cartId,
-      isOrdered: false,
-    });
+    const cartDetails: CartDetailsEntity = await cartRepository
+      .createQueryBuilder()
+      .andWhere('user_id = :userId', { userId: data.userId })
+      .andWhere('is_ordered = :isOrdered', { isOrdered: false })
+      .getOne();
     if (!cartDetails) {
-      throw new NotFoundException('Cart not found');
+      throw new BadRequestException('Cart not found');
     }
-
+    const cartLineItems: CartLineItemEntity[] = await manager
+      .getRepository(CartLineItemEntity)
+      .createQueryBuilder('lineitem')
+      .leftJoinAndSelect('lineitem.productType', 'producttype')
+      .andWhere('cart_details_id = :cartId', {
+        cartId: cartDetails.id,
+      })
+      .getMany();
     const orderLineItems: OrderLineItemEntity[] = [];
     let totalCartValue: number = 0;
     let totalCartActualPrice: number = 0;
     let totalPromoDiscount: number = 0;
     let totalFinalPrice: number = 0;
+    let totalSgst = 0;
+    let totalCgst = 0;
 
     //line item processing logic here
-    cartDetails.lineItems.forEach(async (cartlineItem) => {
-      const orderLineItem: OrderLineItemEntity = orderLineRepository.create();
-      const sareeEntity: SareeEntity = await sareeRepository.findOneBy({
-        id: cartlineItem.productId,
-      });
+    await Promise.all(
+      cartLineItems?.map(async (cartlineItem) => {
+        const orderLineItem: OrderLineItemEntity = orderLineRepository.create();
+        const sareeEntity: SareeEntity = await sareeRepository.findOneBy({
+          id: cartlineItem.productId,
+        });
 
-      //validation for each order line here
-      if (cartlineItem.quantity > sareeEntity.available_qty) {
-        throw new ConflictException(
+        //validation for each order line here
+        if (cartlineItem.quantity > sareeEntity.available_qty) {
+          /* throw new BadRequestException(
           `${sareeEntity.productName} is out of stock`,
-        );
-      }
-      if (cartlineItem.quantity > sareeEntity.maxQuantityPerCart) {
-        throw new ConflictException(
-          `${sareeEntity.productName} max quantity allowed per cart is ${sareeEntity.maxQuantityPerCart}`,
-        );
-      }
-
-      orderLineItem.cartLineItem = cartlineItem;
-      orderLineItem.perItemActualPrice = sareeEntity.actualprice;
-      orderLineItem.perItemOfferPrice = sareeEntity.offerprice;
-      orderLineItem.perItemFinalPrice = orderLineItem.perItemOfferPrice;
-      orderLineItem.totalActualPrice =
-        sareeEntity.actualprice * cartlineItem.quantity;
-      orderLineItem.totalFinalPrice = 0;
-
-      totalCartActualPrice +=
-        orderLineItem.perItemActualPrice * cartlineItem.quantity;
-      totalCartValue += orderLineItem.perItemOfferPrice * cartlineItem.quantity;
-      orderLineItems.push(orderLineItem);
-    });
-    //Promo handling logics here
-    orderLineItems.forEach(async (orderLineItem) => {
-      const sareeEntity: SareeEntity = await sareeRepository.findOneBy({
-        id: orderLineItem.cartLineItem.productId,
-      });
-      if (
-        sareeEntity.promoDetails &&
-        totalCartValue >= sareeEntity.promoDetails.minimumOrderValue
-      ) {
-        if (sareeEntity.promoDetails.discountPercentage > 0) {
-          orderLineItem.promoDiscountPerItem =
-            (orderLineItem.perItemOfferPrice *
-              sareeEntity.promoDetails.discountPercentage) /
-            100;
-        } else if (sareeEntity.promoDetails.flatDiscount > 0) {
-          orderLineItem.promoDiscountPerItem =
-            sareeEntity.promoDetails.flatDiscount;
+        );*/
         }
+        if (cartlineItem.quantity > sareeEntity.maxQuantityPerCart) {
+          throw new BadRequestException(
+            `${sareeEntity.productName} max quantity allowed per cart is ${sareeEntity.maxQuantityPerCart}`,
+          );
+        }
+
+        orderLineItem.cartLineItem = cartlineItem;
+        orderLineItem.perItemActualPrice = Number.parseFloat(
+          sareeEntity.actualprice + '',
+        );
+        orderLineItem.perItemOfferPrice = Number.parseFloat(
+          sareeEntity.offerprice + '',
+        );
+        orderLineItem.totalOfferPrice =
+          sareeEntity.offerprice * cartlineItem.quantity;
+        orderLineItem.promoDiscountPerItem = 0;
+        if (
+          sareeEntity.promoDetails &&
+          totalCartValue >=
+            Number.parseFloat(sareeEntity.promoDetails.minimumOrderValue + '')
+        ) {
+          if (
+            Number.parseFloat(
+              sareeEntity.promoDetails.discountPercentage + '',
+            ) > 0
+          ) {
+            orderLineItem.promoDiscountPerItem =
+              (Number.parseFloat(orderLineItem.perItemOfferPrice + '') *
+                Number.parseFloat(
+                  sareeEntity.promoDetails.discountPercentage + '',
+                )) /
+              100;
+          } else if (
+            Number.parseFloat(sareeEntity.promoDetails.flatDiscount + '') > 0
+          ) {
+            orderLineItem.promoDiscountPerItem = Number.parseFloat(
+              sareeEntity.promoDetails.flatDiscount + '',
+            );
+          }
+        }
+        orderLineItem.totalActualPrice =
+          sareeEntity.actualprice * cartlineItem.quantity;
+        orderLineItem.cgstPerItem =
+          (orderLineItem.perItemOfferPrice -
+            orderLineItem.promoDiscountPerItem) *
+          0.12;
+        orderLineItem.sgstPerItem =
+          (orderLineItem.perItemOfferPrice -
+            orderLineItem.promoDiscountPerItem) *
+          0.12;
+        orderLineItem.totalSgst =
+          orderLineItem.sgstPerItem * cartlineItem.quantity;
+        orderLineItem.totalCgst =
+          orderLineItem.sgstPerItem * cartlineItem.quantity;
         orderLineItem.perItemFinalPrice =
-          orderLineItem.perItemOfferPrice - orderLineItem.promoDiscountPerItem;
-        orderLineItem.cgstPerItem = orderLineItem.perItemFinalPrice * 0.12;
-        orderLineItem.sgstPerItem = orderLineItem.perItemFinalPrice * 0.12;
+          orderLineItem.perItemOfferPrice -
+          orderLineItem.promoDiscountPerItem +
+          2 * orderLineItem.sgstPerItem;
         orderLineItem.totalFinalPrice =
-          orderLineItem.perItemFinalPrice * orderLineItem.cartLineItem.quantity;
-        orderLineItem.promoDescription = sareeEntity.promoDetails.description;
-        totalPromoDiscount +=
-          orderLineItem.promoDiscountPerItem *
-          orderLineItem.cartLineItem.quantity;
-        totalFinalPrice += orderLineItem.totalFinalPrice;
-      }
-    });
+          orderLineItem.perItemFinalPrice * cartlineItem.quantity;
+        orderLineItem.totalPromoDiscount =
+          orderLineItem.promoDiscountPerItem * cartlineItem.quantity;
+        totalCartActualPrice +=
+          orderLineItem.perItemActualPrice * cartlineItem.quantity;
+        totalCartValue +=
+          orderLineItem.perItemFinalPrice * cartlineItem.quantity;
+        totalSgst = totalSgst + orderLineItem.totalSgst;
+        totalCgst = totalCgst + orderLineItem.totalCgst;
+        totalPromoDiscount = orderLineItem.totalPromoDiscount;
+        totalFinalPrice = totalCartValue;
+        console.trace(orderLineItem);
+        orderLineItems.push(orderLineItem);
+      }),
+    );
 
     let orderDetailsEntity: OrderDetailsEntity =
       orderDetailsRepository.create();
     orderDetailsEntity.cartDetails = cartDetails;
-    orderDetailsEntity.orderid =
-      'OD-' + userEntity.mobile + Math.random().toString(4);
+    orderDetailsEntity.billingAddress = data?.billingAddress;
+    orderDetailsEntity.shippingAddress = data?.deliveryAddress;
+    orderDetailsEntity.orderid = 'OD-' + makeid(5) + makeid(4);
     orderDetailsEntity.user = userEntity;
-    orderDetailsEntity.orderstatus = OrderStatus.PENDING;
+    orderDetailsEntity.orderstatus = OrderEvent.ORDERCREATED;
     orderDetailsEntity.ordertype = data.orderType;
-    orderDetailsEntity.totalCgst = totalFinalPrice * 0.12;
-    orderDetailsEntity.totalCgst = totalFinalPrice * 0.12;
-    orderDetailsEntity.totalPrice =
-      totalFinalPrice + orderDetailsEntity.totalCgst * 2;
+    orderDetailsEntity.totalCgst = totalCgst;
+    orderDetailsEntity.totalSgst = totalSgst;
+    orderDetailsEntity.totalPrice = totalFinalPrice;
     orderDetailsEntity.totalActualPrice = totalCartActualPrice;
+    console.trace(orderDetailsEntity);
     orderDetailsEntity = await orderDetailsRepository.save(orderDetailsEntity);
-
     //save the order line items to db
-    orderLineItems.forEach(async (orderLineItem) => {
-      orderLineItem.orderDetails = orderDetailsEntity;
-      await orderLineRepository.save(orderLineItem);
-    });
+    const orderLineEntities: OrderLineItemEntity[] = [];
+    await Promise.all(
+      orderLineItems?.map(async (orderLineItem) => {
+        orderLineItem.orderDetails = orderDetailsEntity;
+        const entity = await orderLineRepository.save(orderLineItem);
+        orderLineEntities.push(entity);
+      }),
+    );
 
     //make the cart updated to ordered status
     cartDetails.isOrdered = true;
@@ -193,9 +230,24 @@ export class CreateOrderTransaction extends BaseTransaction<
     paymentEntity.totalAmount = orderDetailsEntity.totalPrice;
     paymentEntity.orderDetails = orderDetailsEntity;
     paymentEntity = await paymentRepository.save(paymentEntity);
+    await manager
+      .createQueryBuilder()
+      .update(PaymentEntity)
+      .set({ orderDetails: () => `'${orderDetailsEntity.id}'` })
+      .where('id = :paymentId', { paymentId: paymentEntity.id })
+      .execute();
 
-    orderDetailsEntity.paymentDetails = paymentEntity;
-    orderDetailsEntity = await orderDetailsRepository.save(orderDetailsEntity);
-    return this.mapper.convertToOrderResponse(orderDetailsEntity);
+    await manager
+      .createQueryBuilder()
+      .update(OrderDetailsEntity)
+      .set({ paymentDetails: () => `'${paymentEntity.id}'` })
+      .where('id = :orderId', { orderId: orderDetailsEntity.id })
+      .execute();
+    /*orderDetailsEntity = await orderDetailsRepository.findOneBy({
+      id: orderDetailsEntity.id,
+    });*/
+    console.trace(orderDetailsEntity);
+    //return this.mapper.convertToOrderResponse(orderDetailsEntity);
+    return orderDetailsEntity;
   }
 }
