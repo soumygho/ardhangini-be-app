@@ -14,6 +14,8 @@ import { UpdateUserValidationPipe } from './validator/update-user.validator';
 import { AuthService } from './service/auth.service';
 import { UserAuthController } from './controller/user-auth.controller';
 import { AuthGuard } from './guards/UserAuth.guard';
+import { AdminUserService } from './service/admin-user.service';
+import { AdminUserEntity } from './entities/admin-user.entity';
 
 @Module({
   imports: [
@@ -22,6 +24,7 @@ import { AuthGuard } from './guards/UserAuth.guard';
       UserLoginDetailsEntity,
       UserProfileImageEntity,
       DeliveryAddressEntity,
+      AdminUserEntity,
     ]),
   ],
   controllers: [UserController, DeliveryAddressController, UserAuthController],
@@ -33,6 +36,7 @@ import { AuthGuard } from './guards/UserAuth.guard';
     UpdateUserValidationPipe,
     AuthService,
     AuthGuard,
+    AdminUserService,
   ],
 })
 export class UserModule {}

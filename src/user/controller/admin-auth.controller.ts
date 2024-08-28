@@ -22,7 +22,7 @@ export class AdminAuthController extends BaseController {
   }
 
   @ApiOperation({
-    description: 'Signin using email and password',
+    description: 'Signin using email and password For Admin Portal',
   })
   @ApiOkResponse({
     description: 'Token response',
@@ -36,7 +36,7 @@ export class AdminAuthController extends BaseController {
   }
 
   @ApiOperation({
-    description: 'refresh token',
+    description: 'refresh token for Admin Portal',
   })
   @ApiOkResponse({
     description: 'Token response',
@@ -53,7 +53,7 @@ export class AdminAuthController extends BaseController {
 
   @Get('log-out')
   @ApiOperation({
-    description: 'logout user',
+    description: 'logout user from Admin Portal',
   })
   @Admin()
   @UseGuards(AuthGuard)

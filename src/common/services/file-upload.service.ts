@@ -42,8 +42,8 @@ export class FileUploadService {
       'image/jpg',
       'image/jpeg',
     ];
-    if (file && file?.buffer && file?.originalname && file?.mimetype)
-      throw new HttpException('File corrupted', HttpStatus.BAD_REQUEST);
+    /*if (file && file?.buffer && file?.originalname && file?.mimetype)
+      throw new HttpException('File corrupted', HttpStatus.BAD_REQUEST);*/
     if (!allowedFileextensions.includes(file.mimetype))
       throw new HttpException('File type not allowed.', HttpStatus.BAD_REQUEST);
   }
